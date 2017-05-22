@@ -1,6 +1,7 @@
 ﻿Public Class ucrSaveGraph
     Public Event SaveGraphCheckedChanged()
     Public Event GraphNameChanged()
+    Public Event ContentsChanged()
     Public bFirstLoad As Boolean
 
     Public Sub New()
@@ -10,6 +11,7 @@
         ' Add any initialization after the InitializeComponent() call.
         ucrInputGraphName.SetDefaultTypeAsGraph()
         ucrInputGraphName.SetItemsTypeAsGraphs()
+        ucrInputGraphName.SetValidationTypeAsRVariable()
         bFirstLoad = True
     End Sub
 
@@ -21,7 +23,8 @@
     End Sub
 
     Private Sub SetDefaults()
-        chkSaveGraph.Checked = True
+        chkSaveGraph.Checked = False
+        ucrInputGraphName.Visible = False
     End Sub
 
     Public Sub Reset()
@@ -33,6 +36,7 @@
     End Sub
     Private Sub chkSaveGraph_CheckedChanged(sender As Object, e As EventArgs) Handles chkSaveGraph.CheckedChanged
         ucrInputGraphName.Enabled = chkSaveGraph.Checked
+        ucrInputGraphName.Visible = chkSaveGraph.Checked
         RaiseEvent SaveGraphCheckedChanged()
     End Sub
 
@@ -40,6 +44,10 @@
         If chkSaveGraph.Checked Then
             RaiseEvent GraphNameChanged()
         End If
+    End Sub
+
+    Private Sub ucrInputGraphName_ContentsChanged() Handles ucrInputGraphName.ContentsChanged
+        RaiseEvent ContentsChanged()
     End Sub
 
     Public ReadOnly Property bSaveGraph() As Boolean

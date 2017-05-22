@@ -28,17 +28,17 @@ Partial Class ucrFilter
         Me.lstFilters = New System.Windows.Forms.ListView()
         Me.lblFilterPreview = New System.Windows.Forms.Label()
         Me.lblFilterBy = New System.Windows.Forms.Label()
+        Me.cmdClearConditions = New System.Windows.Forms.Button()
+        Me.mcdEditCondition = New System.Windows.Forms.Button()
+        Me.cmdRemoveCondition = New System.Windows.Forms.Button()
+        Me.lblNewFilterName = New System.Windows.Forms.Label()
+        Me.ucrInputFilterName = New instat.ucrInputComboBox()
         Me.ucrValueForFilter = New instat.ucrInputTextBox()
         Me.ucrFilterPreview = New instat.ucrInputTextBox()
         Me.ucrFilterOperation = New instat.ucrInputComboBox()
         Me.ucrFactorLevels = New instat.ucrFactor()
         Me.ucrFilterByReceiver = New instat.ucrReceiverSingle()
         Me.ucrSelectorForFitler = New instat.ucrSelectorByDataFrameAddRemove()
-        Me.cmdClearConditions = New System.Windows.Forms.Button()
-        Me.mcdEditCondition = New System.Windows.Forms.Button()
-        Me.cmdRemoveCondition = New System.Windows.Forms.Button()
-        Me.lblNewFilterName = New System.Windows.Forms.Label()
-        Me.ucrInputFilterName = New instat.ucrInputComboBox()
         Me.SuspendLayout()
         '
         'lblSelectLevels
@@ -46,13 +46,13 @@ Partial Class ucrFilter
         Me.lblSelectLevels.AutoSize = True
         Me.lblSelectLevels.Location = New System.Drawing.Point(413, 42)
         Me.lblSelectLevels.Name = "lblSelectLevels"
-        Me.lblSelectLevels.Size = New System.Drawing.Size(71, 13)
+        Me.lblSelectLevels.Size = New System.Drawing.Size(74, 13)
         Me.lblSelectLevels.TabIndex = 3
-        Me.lblSelectLevels.Text = "Select Levels"
+        Me.lblSelectLevels.Text = "Select Levels:"
         '
         'cmdAddCondition
         '
-        Me.cmdAddCondition.Location = New System.Drawing.Point(274, 77)
+        Me.cmdAddCondition.Location = New System.Drawing.Point(278, 64)
         Me.cmdAddCondition.Name = "cmdAddCondition"
         Me.cmdAddCondition.Size = New System.Drawing.Size(93, 23)
         Me.cmdAddCondition.TabIndex = 4
@@ -62,8 +62,7 @@ Partial Class ucrFilter
         '
         'cmdToggleSelectAll
         '
-        Me.cmdToggleSelectAll.Enabled = False
-        Me.cmdToggleSelectAll.Location = New System.Drawing.Point(416, 283)
+        Me.cmdToggleSelectAll.Location = New System.Drawing.Point(413, 283)
         Me.cmdToggleSelectAll.Name = "cmdToggleSelectAll"
         Me.cmdToggleSelectAll.Size = New System.Drawing.Size(93, 23)
         Me.cmdToggleSelectAll.TabIndex = 7
@@ -82,23 +81,73 @@ Partial Class ucrFilter
         'lblFilterPreview
         '
         Me.lblFilterPreview.AutoSize = True
-        Me.lblFilterPreview.Location = New System.Drawing.Point(5, 334)
+        Me.lblFilterPreview.Location = New System.Drawing.Point(5, 339)
         Me.lblFilterPreview.Name = "lblFilterPreview"
-        Me.lblFilterPreview.Size = New System.Drawing.Size(70, 13)
+        Me.lblFilterPreview.Size = New System.Drawing.Size(73, 13)
         Me.lblFilterPreview.TabIndex = 9
-        Me.lblFilterPreview.Text = "Fliter Preview"
+        Me.lblFilterPreview.Text = "Fliter Preview:"
         '
         'lblFilterBy
         '
         Me.lblFilterBy.AutoSize = True
-        Me.lblFilterBy.Location = New System.Drawing.Point(271, 22)
+        Me.lblFilterBy.Location = New System.Drawing.Point(278, 27)
         Me.lblFilterBy.Name = "lblFilterBy"
-        Me.lblFilterBy.Size = New System.Drawing.Size(44, 13)
+        Me.lblFilterBy.Size = New System.Drawing.Size(47, 13)
         Me.lblFilterBy.TabIndex = 13
-        Me.lblFilterBy.Text = "Filter By"
+        Me.lblFilterBy.Text = "Filter By:"
+        '
+        'cmdClearConditions
+        '
+        Me.cmdClearConditions.Location = New System.Drawing.Point(278, 304)
+        Me.cmdClearConditions.Name = "cmdClearConditions"
+        Me.cmdClearConditions.Size = New System.Drawing.Size(94, 23)
+        Me.cmdClearConditions.TabIndex = 14
+        Me.cmdClearConditions.Tag = "Clear_Conditions"
+        Me.cmdClearConditions.Text = "Clear Conditions"
+        Me.cmdClearConditions.UseVisualStyleBackColor = True
+        '
+        'mcdEditCondition
+        '
+        Me.mcdEditCondition.Enabled = False
+        Me.mcdEditCondition.Location = New System.Drawing.Point(278, 216)
+        Me.mcdEditCondition.Name = "mcdEditCondition"
+        Me.mcdEditCondition.Size = New System.Drawing.Size(93, 36)
+        Me.mcdEditCondition.TabIndex = 15
+        Me.mcdEditCondition.Tag = "Edit_Condition"
+        Me.mcdEditCondition.Text = "Edit Condition"
+        Me.mcdEditCondition.UseVisualStyleBackColor = True
+        '
+        'cmdRemoveCondition
+        '
+        Me.cmdRemoveCondition.Enabled = False
+        Me.cmdRemoveCondition.Location = New System.Drawing.Point(278, 260)
+        Me.cmdRemoveCondition.Name = "cmdRemoveCondition"
+        Me.cmdRemoveCondition.Size = New System.Drawing.Size(93, 36)
+        Me.cmdRemoveCondition.TabIndex = 16
+        Me.cmdRemoveCondition.Tag = "Remove_Condition"
+        Me.cmdRemoveCondition.Text = "Remove Condition"
+        Me.cmdRemoveCondition.UseVisualStyleBackColor = True
+        '
+        'lblNewFilterName
+        '
+        Me.lblNewFilterName.AutoSize = True
+        Me.lblNewFilterName.Location = New System.Drawing.Point(5, 366)
+        Me.lblNewFilterName.Name = "lblNewFilterName"
+        Me.lblNewFilterName.Size = New System.Drawing.Size(88, 13)
+        Me.lblNewFilterName.TabIndex = 17
+        Me.lblNewFilterName.Text = "New Filter Name:"
+        '
+        'ucrInputFilterName
+        '
+        Me.ucrInputFilterName.IsReadOnly = False
+        Me.ucrInputFilterName.Location = New System.Drawing.Point(96, 364)
+        Me.ucrInputFilterName.Name = "ucrInputFilterName"
+        Me.ucrInputFilterName.Size = New System.Drawing.Size(176, 21)
+        Me.ucrInputFilterName.TabIndex = 18
         '
         'ucrValueForFilter
         '
+        Me.ucrValueForFilter.IsReadOnly = False
         Me.ucrValueForFilter.Location = New System.Drawing.Point(490, 40)
         Me.ucrValueForFilter.Name = "ucrValueForFilter"
         Me.ucrValueForFilter.Size = New System.Drawing.Size(120, 21)
@@ -106,14 +155,16 @@ Partial Class ucrFilter
         '
         'ucrFilterPreview
         '
-        Me.ucrFilterPreview.Location = New System.Drawing.Point(79, 330)
+        Me.ucrFilterPreview.IsReadOnly = False
+        Me.ucrFilterPreview.Location = New System.Drawing.Point(96, 337)
         Me.ucrFilterPreview.Name = "ucrFilterPreview"
-        Me.ucrFilterPreview.Size = New System.Drawing.Size(293, 21)
+        Me.ucrFilterPreview.Size = New System.Drawing.Size(275, 21)
         Me.ucrFilterPreview.TabIndex = 10
         '
         'ucrFilterOperation
         '
-        Me.ucrFilterOperation.Location = New System.Drawing.Point(421, 41)
+        Me.ucrFilterOperation.IsReadOnly = False
+        Me.ucrFilterOperation.Location = New System.Drawing.Point(420, 40)
         Me.ucrFilterOperation.Name = "ucrFilterOperation"
         Me.ucrFilterOperation.Size = New System.Drawing.Size(44, 21)
         Me.ucrFilterOperation.TabIndex = 5
@@ -131,7 +182,7 @@ Partial Class ucrFilter
         '
         'ucrFilterByReceiver
         '
-        Me.ucrFilterByReceiver.Location = New System.Drawing.Point(274, 41)
+        Me.ucrFilterByReceiver.Location = New System.Drawing.Point(278, 42)
         Me.ucrFilterByReceiver.Margin = New System.Windows.Forms.Padding(0)
         Me.ucrFilterByReceiver.Name = "ucrFilterByReceiver"
         Me.ucrFilterByReceiver.Selector = Nothing
@@ -140,59 +191,13 @@ Partial Class ucrFilter
         '
         'ucrSelectorForFitler
         '
+        Me.ucrSelectorForFitler.bShowHiddenColumns = False
+        Me.ucrSelectorForFitler.bUseCurrentFilter = True
         Me.ucrSelectorForFitler.Location = New System.Drawing.Point(4, 4)
         Me.ucrSelectorForFitler.Margin = New System.Windows.Forms.Padding(0)
         Me.ucrSelectorForFitler.Name = "ucrSelectorForFitler"
         Me.ucrSelectorForFitler.Size = New System.Drawing.Size(210, 180)
         Me.ucrSelectorForFitler.TabIndex = 0
-        '
-        'cmdClearConditions
-        '
-        Me.cmdClearConditions.Location = New System.Drawing.Point(278, 299)
-        Me.cmdClearConditions.Name = "cmdClearConditions"
-        Me.cmdClearConditions.Size = New System.Drawing.Size(94, 23)
-        Me.cmdClearConditions.TabIndex = 14
-        Me.cmdClearConditions.Tag = "Clear_Conditions"
-        Me.cmdClearConditions.Text = "Clear Conditions"
-        Me.cmdClearConditions.UseVisualStyleBackColor = True
-        '
-        'mcdEditCondition
-        '
-        Me.mcdEditCondition.Enabled = False
-        Me.mcdEditCondition.Location = New System.Drawing.Point(278, 211)
-        Me.mcdEditCondition.Name = "mcdEditCondition"
-        Me.mcdEditCondition.Size = New System.Drawing.Size(93, 36)
-        Me.mcdEditCondition.TabIndex = 15
-        Me.mcdEditCondition.Tag = "Edit_Condition"
-        Me.mcdEditCondition.Text = "Edit Condition"
-        Me.mcdEditCondition.UseVisualStyleBackColor = True
-        '
-        'cmdRemoveCondition
-        '
-        Me.cmdRemoveCondition.Enabled = False
-        Me.cmdRemoveCondition.Location = New System.Drawing.Point(278, 254)
-        Me.cmdRemoveCondition.Name = "cmdRemoveCondition"
-        Me.cmdRemoveCondition.Size = New System.Drawing.Size(93, 36)
-        Me.cmdRemoveCondition.TabIndex = 16
-        Me.cmdRemoveCondition.Tag = "Remove_Condition"
-        Me.cmdRemoveCondition.Text = "Remove Condition"
-        Me.cmdRemoveCondition.UseVisualStyleBackColor = True
-        '
-        'lblNewFilterName
-        '
-        Me.lblNewFilterName.AutoSize = True
-        Me.lblNewFilterName.Location = New System.Drawing.Point(5, 366)
-        Me.lblNewFilterName.Name = "lblNewFilterName"
-        Me.lblNewFilterName.Size = New System.Drawing.Size(85, 13)
-        Me.lblNewFilterName.TabIndex = 17
-        Me.lblNewFilterName.Text = "New Filter Name"
-        '
-        'ucrInputFilterName
-        '
-        Me.ucrInputFilterName.Location = New System.Drawing.Point(96, 361)
-        Me.ucrInputFilterName.Name = "ucrInputFilterName"
-        Me.ucrInputFilterName.Size = New System.Drawing.Size(176, 21)
-        Me.ucrInputFilterName.TabIndex = 18
         '
         'ucrFilter
         '

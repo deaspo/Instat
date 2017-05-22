@@ -1,5 +1,4 @@
-﻿
-' Instat-R
+﻿' Instat-R
 ' Copyright (C) 2015
 '
 ' This program is free software: you can redistribute it and/or modify
@@ -14,156 +13,111 @@
 '
 ' You should have received a copy of the GNU General Public License k
 ' along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 Imports instat.Translations
 Public Class dlgColumnStats
     Public bFirstLoad As Boolean = True
+    Private bReset As Boolean = True
+    Private clsSummariesList As New RFunction
+    Private bResetSubdialog As Boolean = False
+    Private clsDefaultFunction As New RFunction
+
     Private Sub dlgColumnStats_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        autoTranslate(Me)
         If bFirstLoad Then
-            SetDefaults()
             InitialiseDialog()
             bFirstLoad = False
-        Else
-            ReopenDialog()
         End If
+        If bReset Then
+            SetDefaults()
+        End If
+        SetRCodeForControls(bReset)
+        bReset = False
+        autoTranslate(Me)
         TestOKEnabled()
     End Sub
 
-    Private Sub TestOKEnabled()
-        If (chkCount.Checked Or chkMaximum.Checked Or chkMean.Checked Or chkMedian.Checked Or chkMinimum.Checked Or chkMode.Checked Or chkStDev.Checked Or chkSum.Checked Or chkRange.Checked) And Not ucrReceiverSelectedVariables.IsEmpty Then
+    Public Sub SetRCodeForControls(bReset As Boolean)
+        SetRCode(Me, ucrBase.clsRsyntax.clsBaseFunction, bReset)
+    End Sub
+
+    Public Sub TestOKEnabled()
+        If Not ucrReceiverSelectedVariables.IsEmpty() AndAlso Not clsSummariesList.clsParameters.Count = 0 Then
             ucrBase.OKEnabled(True)
         Else
             ucrBase.OKEnabled(False)
         End If
     End Sub
 
-    Private Sub ReopenDialog()
-
-    End Sub
-
     Private Sub SetDefaults()
-        chkStoreResults.Checked = True
-        chkPrintOutput.Checked = False
-        chkdropUnusedLevels.Checked = False
+        clsDefaultFunction = New RFunction
+        clsSummariesList = New RFunction
+
         ucrSelectorForColumnStatistics.Reset()
+        ucrReceiverSelectedVariables.SetMeAsReceiver()
+
+        clsSummariesList.SetRCommand("c")
+        clsSummariesList.AddParameter("summary_count_non_missing", Chr(34) & "summary_count_non_missing" & Chr(34), bIncludeArgumentName:=False)
+        clsSummariesList.AddParameter("summary_count", Chr(34) & "summary_count" & Chr(34), bIncludeArgumentName:=False)
+        clsSummariesList.AddParameter("summary_sum", Chr(34) & "summary_sum" & Chr(34), bIncludeArgumentName:=False)
+
+        clsDefaultFunction.SetRCommand(frmMain.clsRLink.strInstatDataObject & "$calculate_summary")
+        clsDefaultFunction.AddParameter("summaries", clsRFunctionParameter:=clsSummariesList)
+        ucrBase.clsRsyntax.SetBaseRFunction(clsDefaultFunction)
+        bResetSubdialog = True
     End Sub
 
     Private Sub InitialiseDialog()
         ucrBase.clsRsyntax.iCallType = 2
-        ucrReceiverSelectedVariables.Selector = ucrSelectorForColumnStatistics
-        ucrReceiverByFactor.Selector = ucrSelectorForColumnStatistics
-        ucrReceiverSelectedVariables.SetMeAsReceiver()
-        ucrReceiverSelectedVariables.SetIncludedDataTypes({"numeric"})
-        ucrReceiverByFactor.SetIncludedDataTypes({"factor"})
         ucrBase.iHelpTopicID = 64
-        ucrBase.clsRsyntax.SetFunction(frmMain.clsRLink.strInstatDataObject & "$calculate_summary")
-        chkCount.Tag = "summary_count"
-        chkMean.Tag = "summary_mean"
-        chkMinimum.Tag = "summary_min"
-        chkMaximum.Tag = "summary_max"
-        chkMedian.Tag = "summary_median"
-        chkSum.Tag = "summary_sum"
-        chkStDev.Tag = "summary_sd"
-        chkMode.Tag = "summmary_mode"
-        chkRange.Tag = "summmary_range"
+
+        ucrReceiverSelectedVariables.Selector = ucrSelectorForColumnStatistics
+        ' only allow numeric variables in the first receiver? 
+        ucrReceiverSelectedVariables.SetIncludedDataTypes({"numeric"})
+        ucrReceiverSelectedVariables.SetParameter(New RParameter("columns_to_summarise", 1))
+        ucrReceiverSelectedVariables.SetParameterIsString()
+
+        ucrReceiverByFactor.Selector = ucrSelectorForColumnStatistics
+        ucrReceiverByFactor.SetIncludedDataTypes({"factor"}) 'This needs to change
+        ucrReceiverByFactor.SetParameter(New RParameter("factors", 2))
+        ucrReceiverByFactor.SetParameterIsString()
+
+        ucrSelectorForColumnStatistics.SetParameter(New RParameter("data_name", 0))
+        ucrSelectorForColumnStatistics.SetParameterIsString()
+
+        ucrChkStoreResults.SetText("Store Results in Data Frame")
+        ucrChkStoreResults.SetParameter(New RParameter("store_results", 3))
+        ucrChkStoreResults.SetValuesCheckedAndUnchecked("TRUE", "FALSE")
+        ucrChkStoreResults.SetRDefault("TRUE")
+
+        ucrChkPrintOutput.SetText("Print Results to Output Window")
+        ucrChkPrintOutput.SetParameter(New RParameter("return_output", 4))
+        ucrChkPrintOutput.SetValuesCheckedAndUnchecked("TRUE", "FALSE")
+        ucrChkPrintOutput.SetRDefault("FALSE")
+
+        ucrChkdropUnusedLevels.SetText("Drop Unused Levels")
+        ucrChkdropUnusedLevels.SetParameter(New RParameter("drop", 5))
+        ucrChkdropUnusedLevels.SetValuesCheckedAndUnchecked("TRUE", "FALSE")
+        ucrChkdropUnusedLevels.SetRDefault("FALSE")
+
+        ucrChkOmitMissing.SetText("Omit Missing Values")
+        ucrChkOmitMissing.SetParameter(New RParameter("na.rm", 6))
+        ucrChkOmitMissing.SetValuesCheckedAndUnchecked("TRUE", "FALSE")
+        ucrChkOmitMissing.SetRDefault("FALSE")
     End Sub
 
     Private Sub ucrBase_ClickReset(sender As Object, e As EventArgs) Handles ucrBase.ClickReset
         SetDefaults()
+        SetRCodeForControls(True)
         TestOKEnabled()
     End Sub
 
-    Private Sub grpSummaries_CheckedChanged(sender As Object, e As EventArgs) Handles chkCount.CheckedChanged, chkMean.CheckedChanged, chkMedian.CheckedChanged, chkMinimum.CheckedChanged, chkMaximum.CheckedChanged, chkStDev.CheckedChanged, chkMode.CheckedChanged, chkSum.CheckedChanged, chkRange.CheckedChanged
-        SummariesParameters()
+    Private Sub cmdSummaries_click(sender As Object, e As EventArgs) Handles cmdSummaries.Click
+        sdgSummaries.SetRFunction(clsSummariesList, bResetSubdialog)
+        bResetSubdialog = False
+        sdgSummaries.ShowDialog()
         TestOKEnabled()
     End Sub
 
-    Private Sub SummariesParameters()
-        Dim lstCheckboxes As New List(Of CheckBox)
-        Dim chkSummary As CheckBox
-        Dim strSummariesParameter As String = ""
-        Dim i As Integer = 0
-        If lstCheckboxes.Count = 0 Then
-            lstCheckboxes.AddRange({chkMean, chkMedian, chkCount, chkMinimum, chkMaximum, chkStDev, chkMode, chkSum, chkRange})
-        End If
-
-        strSummariesParameter = "c("
-        For Each chkSummary In lstCheckboxes
-            If chkSummary.Checked Then
-                If i > 0 Then
-                    strSummariesParameter = strSummariesParameter & ","
-                End If
-                strSummariesParameter = strSummariesParameter & Chr(34) & chkSummary.Tag & Chr(34)
-                i = i + 1
-            End If
-        Next
-        strSummariesParameter = strSummariesParameter & ")"
-        If i > 0 Then
-            ucrBase.clsRsyntax.AddParameter("summaries", strSummariesParameter)
-        Else
-            ucrBase.clsRsyntax.RemoveParameter("summaries")
-        End If
-    End Sub
-
-    Private Sub grpOptions_CheckedChanged(sender As Object, e As EventArgs) Handles chkdropUnusedLevels.CheckedChanged, chkPrintOutput.CheckedChanged
-        OptionParameters()
-    End Sub
-
-    Private Sub OptionParameters()
-        If chkPrintOutput.Checked Then
-            ucrBase.clsRsyntax.AddParameter("return_output", "TRUE")
-        Else
-            If frmMain.clsInstatOptions.bIncludeRDefaultParameters Then
-                ucrBase.clsRsyntax.AddParameter("return_output", "FALSE")
-            Else
-                ucrBase.clsRsyntax.RemoveParameter("return_output")
-            End If
-        End If
-        If chkdropUnusedLevels.Checked Then
-            ucrBase.clsRsyntax.AddParameter("drop", "TRUE")
-        Else
-            If frmMain.clsInstatOptions.bIncludeRDefaultParameters Then
-                ucrBase.clsRsyntax.AddParameter("drop", "FALSE")
-            Else
-                ucrBase.clsRsyntax.RemoveParameter("drop")
-            End If
-        End If
-    End Sub
-
-    Private Sub ucrSelectorForColumnStatistics_DataFrameChanged() Handles ucrSelectorForColumnStatistics.DataFrameChanged
-        ucrBase.clsRsyntax.AddParameter("data_name", Chr(34) & ucrSelectorForColumnStatistics.ucrAvailableDataFrames.cboAvailableDataFrames.SelectedItem & Chr(34))
-    End Sub
-
-    Private Sub ucrReceiverSelectedVariables_SelectionChanged() Handles ucrReceiverSelectedVariables.SelectionChanged
-        If Not ucrReceiverSelectedVariables.IsEmpty Then
-            ucrBase.clsRsyntax.AddParameter("columns_to_summarise", ucrReceiverSelectedVariables.GetVariableNames)
-        Else
-            ucrBase.clsRsyntax.RemoveParameter("columns_to_summarise")
-        End If
-    End Sub
-
-    Private Sub chkStoreResults_CheckedChanged(sender As Object, e As EventArgs) Handles chkStoreResults.CheckedChanged
-        StoreResultsParamenter()
-    End Sub
-
-    Private Sub StoreResultsParamenter()
-        If chkStoreResults.Checked Then
-            If frmMain.clsInstatOptions.bIncludeRDefaultParameters Then
-                ucrBase.clsRsyntax.AddParameter("store_results", "TRUE")
-            Else
-                ucrBase.clsRsyntax.RemoveParameter("store_results")
-            End If
-        Else
-            ucrBase.clsRsyntax.AddParameter("store_results", "FALSE")
-        End If
-    End Sub
-
-    Private Sub ucrReceiverByFactor_SelectionChanged() Handles ucrReceiverByFactor.SelectionChanged
-        If Not ucrReceiverByFactor.IsEmpty Then
-            ucrBase.clsRsyntax.AddParameter("factors", ucrReceiverByFactor.GetVariableNames)
-        Else
-            ucrBase.clsRsyntax.RemoveParameter("factors")
-        End If
+    Private Sub CoreControls_ControlContentsChanged(ucrChangedControl As ucrCore) Handles ucrReceiverSelectedVariables.ControlContentsChanged
+        TestOKEnabled()
     End Sub
 End Class

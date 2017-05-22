@@ -39,7 +39,10 @@ Partial Class dlgModelProbabilities
         Me.ClientSize = New System.Drawing.Size(407, 278)
         Me.Controls.Add(Me.ucrBase)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow
+        Me.MaximizeBox = False
+        Me.MinimizeBox = False
         Me.Name = "dlgModelProbabilities"
+        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "Model Probabilities"
         Me.ResumeLayout(False)
 

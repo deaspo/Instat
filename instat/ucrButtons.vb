@@ -22,6 +22,7 @@ Public Class ucrButtons
     Public bFirstLoad As Boolean
     Public strComment As String
 
+
     Public Sub New()
         ' This call is required by the designer.
         InitializeComponent()
@@ -48,21 +49,52 @@ Public Class ucrButtons
 
     Private Sub cmdOk_Click(sender As Object, e As EventArgs) Handles cmdOk.Click
         Dim strComments As String = ""
+        Dim bIsAssigned As Boolean
+        Dim bToBeAssigned As Boolean
+        Dim strAssignTo As String
+        Dim lstCurrentEnabled As New List(Of Boolean)
+        Dim ctrTempControl As Control
+        Dim i As Integer
+
+        For Each ctrTempControl In ParentForm.Controls
+            lstCurrentEnabled.Add(ctrTempControl.Enabled)
+            ctrTempControl.Enabled = False
+        Next
+        ParentForm.Cursor = Cursors.WaitCursor
 
         RaiseEvent BeforeClickOk(sender, e)
 
         If chkComment.Checked Then
             strComments = txtComment.Text
         End If
-        frmMain.clsRLink.RunScript(clsRsyntax.GetScript(), clsRsyntax.iCallType, strComment:=strComments)
+        bIsAssigned = clsRsyntax.GetbIsAssigned()
+        bToBeAssigned = clsRsyntax.GetbToBeAssigned()
+        strAssignTo = clsRsyntax.GetstrAssignTo()
+        'Also need to be getting strAssignToColumn, strAssignToDataFrame etc. maybe one method to get all as a list
+        frmMain.clsRLink.RunScript(clsRsyntax.GetScript(), clsRsyntax.iCallType, bHtmlOutput:=clsRsyntax.bHTMLOutput, strComment:=strComments)
 
         'This clears the script after it has been run, but leave the function and parameters in the base function
         'so that it can be run exactly the same when reopened.
         clsRsyntax.strScript = ""
 
         RaiseEvent ClickOk(sender, e)
+        clsRsyntax.SetbIsAssigned(bIsAssigned)
+        clsRsyntax.SetbToBeAssigned(bToBeAssigned)
+        clsRsyntax.SetstrAssignTo(strAssignTo)
+        'Need to be resetting other AssignTo values as well, maybe through single method
 
-        Me.ParentForm.Hide()
+        'Warning: these reinitializing processes of the RSyntax parameters should probably be integrated at the end of GetScript. 
+        'However, for the moment, RSyntax is not playing it's role of capturing the whole set of R-commands that the user wants to run when OK is Cklicked. 
+        'Indeed, the events BeforeClickOk and ClickOk enables for the moment to insert R-commands before and after the Base R-command handle. 
+        'In the process, we want the RSyntax parameters to be set as at the end of GetScript. Hence the reset needs to come after.
+        'Eventually, all this should be more neatly incorporated in the RSyntax machinery...
+        ParentForm.Hide()
+        i = 0
+        For Each ctrTempControl In ParentForm.Controls
+            ctrTempControl.Enabled = lstCurrentEnabled(i)
+            i = i + 1
+        Next
+        ParentForm.Cursor = Cursors.Default
 
     End Sub
 
@@ -81,24 +113,39 @@ Public Class ucrButtons
     End Sub
 
     Private Sub SetDefaults()
-        chkComment.Checked = True
+        If frmMain.clsInstatOptions IsNot Nothing Then
+            chkComment.Checked = frmMain.clsInstatOptions.bIncludeCommentDefault
+        Else
+            chkComment.Checked = True
+        End If
+        SetCommentEditable()
         'TODO default text should be translatable
-        txtComment.Text = ParentForm.Name & " " & frmMain.clsInstatOptions.strComment & " " & ParentForm.Text
+        'This is needed only so that the designer displays correctly in VS
+        If frmMain.clsInstatOptions IsNot Nothing Then
+            txtComment.Text = ParentForm.Name & " " & frmMain.clsInstatOptions.strComment & " " & ParentForm.Text
+        Else
+            txtComment.Text = ParentForm.Name & " " & ParentForm.Text
+        End If
     End Sub
 
     Private Sub cmdPaste_Click(sender As Object, e As EventArgs) Handles cmdPaste.Click
-        frmScript.txtScript.Text = frmScript.txtScript.Text & vbCrLf & "# " & txtComment.Text
-        frmScript.txtScript.Text = frmScript.txtScript.Text & vbCrLf & clsRsyntax.GetScript()
-        frmScript.Visible = True
-        frmScript.BringToFront()
+        'here we getscript but we don't reinitialise the AssignTo etc. for when pressing OK button ? ...
+        frmMain.AddToScriptWindow("# " & txtComment.Text & vbCrLf & clsRsyntax.GetScript())
     End Sub
 
     Private Sub chkComment_CheckedChanged(sender As Object, e As EventArgs) Handles chkComment.CheckedChanged
+        SetCommentEditable()
+    End Sub
+
+    Private Sub SetCommentEditable()
         txtComment.Enabled = chkComment.Checked
     End Sub
 
     Private Sub cmdHelp_Click(sender As Object, e As EventArgs) Handles cmdHelp.Click
+        HelpContent()
+    End Sub
 
+    Private Sub HelpContent()
         ' (1) Use HelpNDoc's Help Context number. Not dependent on HelpNDoc.
         If iHelpTopicID > 0 Then
             Help.ShowHelp(Me.Parent, frmMain.strStaticPath & "\" & frmMain.strHelpFilePath, HelpNavigator.TopicId, iHelpTopicID.ToString())
@@ -113,7 +160,6 @@ Public Class ucrButtons
         '     covertion from .bas) to refer to the Help Context numbers.
         'Help.ShowHelp(Me, strHelpFilePath, HelpNavigator.TopicId, mHelpConstants.HELP_Maths.ToString)
     End Sub
-
     Private Sub chkComment_KeyPress(sender As Object, e As KeyPressEventArgs) Handles chkComment.KeyPress
         If e.KeyChar = vbCr And chkComment.Checked = True Then
             chkComment.Checked = False

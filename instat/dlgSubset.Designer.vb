@@ -32,58 +32,59 @@ Partial Class dlgSubset
         '
         'ucrBase
         '
-        Me.ucrBase.Location = New System.Drawing.Point(12, 263)
+        Me.ucrBase.Location = New System.Drawing.Point(0, 0)
         Me.ucrBase.Name = "ucrBase"
-        Me.ucrBase.Size = New System.Drawing.Size(410, 53)
-        Me.ucrBase.TabIndex = 0
+        Me.ucrBase.Size = New System.Drawing.Size(410, 52)
+        Me.ucrBase.TabIndex = 5
         '
         'ucrDataFrameAddRemove
         '
-        Me.ucrDataFrameAddRemove.Location = New System.Drawing.Point(12, 12)
+        Me.ucrDataFrameAddRemove.bShowHiddenColumns = False
+        Me.ucrDataFrameAddRemove.bUseCurrentFilter = True
+        Me.ucrDataFrameAddRemove.Location = New System.Drawing.Point(0, 0)
+        Me.ucrDataFrameAddRemove.Margin = New System.Windows.Forms.Padding(0)
         Me.ucrDataFrameAddRemove.Name = "ucrDataFrameAddRemove"
-        Me.ucrDataFrameAddRemove.Size = New System.Drawing.Size(242, 179)
-        Me.ucrDataFrameAddRemove.TabIndex = 1
+        Me.ucrDataFrameAddRemove.Size = New System.Drawing.Size(210, 180)
+        Me.ucrDataFrameAddRemove.TabIndex = 4
         '
         'ucrReceiverSubset
         '
-        Me.ucrReceiverSubset.Location = New System.Drawing.Point(260, 43)
+        Me.ucrReceiverSubset.Location = New System.Drawing.Point(0, 0)
+        Me.ucrReceiverSubset.Margin = New System.Windows.Forms.Padding(0)
         Me.ucrReceiverSubset.Name = "ucrReceiverSubset"
-        Me.ucrReceiverSubset.Size = New System.Drawing.Size(121, 128)
-        Me.ucrReceiverSubset.TabIndex = 2
+        Me.ucrReceiverSubset.Selector = Nothing
+        Me.ucrReceiverSubset.Size = New System.Drawing.Size(120, 100)
+        Me.ucrReceiverSubset.TabIndex = 3
         '
         'lblSelectedVariables
         '
-        Me.lblSelectedVariables.AutoSize = True
-        Me.lblSelectedVariables.Location = New System.Drawing.Point(260, 27)
+        Me.lblSelectedVariables.Location = New System.Drawing.Point(0, 0)
         Me.lblSelectedVariables.Name = "lblSelectedVariables"
-        Me.lblSelectedVariables.Size = New System.Drawing.Size(100, 13)
-        Me.lblSelectedVariables.TabIndex = 3
+        Me.lblSelectedVariables.Size = New System.Drawing.Size(100, 23)
+        Me.lblSelectedVariables.TabIndex = 2
         Me.lblSelectedVariables.Tag = "Selected_variables"
-        Me.lblSelectedVariables.Text = "Selected variable(s)"
         '
         'lblDrop
         '
-        Me.lblDrop.AutoSize = True
-        Me.lblDrop.Location = New System.Drawing.Point(257, 178)
+        Me.lblDrop.Location = New System.Drawing.Point(0, 0)
         Me.lblDrop.Name = "lblDrop"
-        Me.lblDrop.Size = New System.Drawing.Size(30, 13)
-        Me.lblDrop.TabIndex = 3
+        Me.lblDrop.Size = New System.Drawing.Size(100, 23)
+        Me.lblDrop.TabIndex = 1
         Me.lblDrop.Tag = "Drop"
-        Me.lblDrop.Text = "Drop"
         '
         'cboDrop
         '
         Me.cboDrop.FormattingEnabled = True
-        Me.cboDrop.Location = New System.Drawing.Point(260, 197)
+        Me.cboDrop.Location = New System.Drawing.Point(0, 0)
         Me.cboDrop.Name = "cboDrop"
         Me.cboDrop.Size = New System.Drawing.Size(121, 21)
-        Me.cboDrop.TabIndex = 4
+        Me.cboDrop.TabIndex = 0
         '
         'dlgSubset
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(445, 328)
+        Me.ClientSize = New System.Drawing.Size(284, 262)
         Me.Controls.Add(Me.cboDrop)
         Me.Controls.Add(Me.lblDrop)
         Me.Controls.Add(Me.lblSelectedVariables)
@@ -91,11 +92,12 @@ Partial Class dlgSubset
         Me.Controls.Add(Me.ucrDataFrameAddRemove)
         Me.Controls.Add(Me.ucrBase)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow
+        Me.MaximizeBox = False
+        Me.MinimizeBox = False
         Me.Name = "dlgSubset"
+        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Tag = "Subset"
-        Me.Text = "Subset"
         Me.ResumeLayout(False)
-        Me.PerformLayout()
 
     End Sub
 

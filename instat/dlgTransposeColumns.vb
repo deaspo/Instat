@@ -13,52 +13,92 @@
 '
 ' You should have received a copy of the GNU General Public License k
 ' along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 Imports instat.Translations
 Public Class dlgTransposeColumns
     Private bFirstLoad As Boolean = True
+    Private bReset As Boolean = True
+    Private clsOverallFunction, clsTFunction As New RFunction
+
     Private Sub dlgTransposeColumns_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         If bFirstLoad Then
             InitialiseDialog()
-            SetDefaults()
             bFirstLoad = False
-        Else
-            ReOpenDialog()
         End If
+        If bReset Then
+            SetDefaults()
+        End If
+        SetRCodeForControls(bReset)
+        bReset = False
         autoTranslate(Me)
-
     End Sub
-    'this contains things that initialise the dialog and run once
+
     Private Sub InitialiseDialog()
-        ucrColumsToTranspose.Selector = ucrSelectorTransposeColumns
-        ucrColumsToTranspose.SetMeAsReceiver()
         ucrBase.iHelpTopicID = 277
 
-    End Sub
-    'checks when to enable ok button
-    Private Sub TestOkEnabled()
-        If ucrColumsToTranspose.IsEmpty Then
-            ucrBase.OKEnabled(False)
-        Else
-            ucrBase.OKEnabled(True)
-        End If
+        ' ucrReceiver
+        ucrReceiverColumsToTranspose.SetParameter(New RParameter("x", 0))
+        ucrReceiverColumsToTranspose.SetParameterIsRFunction()
+        ucrReceiverColumsToTranspose.Selector = ucrSelectorTransposeColumns
+        ucrReceiverColumsToTranspose.SetMeAsReceiver()
 
+        'The checkbox is not yet implemented in the updated code as it was not implemented in pre-updated code
+        ucrChkNameNewColumns.SetText("Name New Columns")
+        ucrChkNameNewColumns.Enabled = False ' temporary
 
+        'ucrNewDF
+        ucrNewDataframe.SetIsTextBox()
+        ucrNewDataframe.SetSaveTypeAsDataFrame()
+        ucrNewDataframe.SetDataFrameSelector(ucrSelectorTransposeColumns.ucrAvailableDataFrames)
+        ucrNewDataframe.SetLabelText("New Data Frame Name:")
     End Sub
-    'set defaults for the dialog
+
     Private Sub SetDefaults()
-        ucrColumsToTranspose.Selector = ucrSelectorTransposeColumns
-        ucrColumsToTranspose.SetMeAsReceiver()
-        TestOkEnabled()
+        clsTFunction = New RFunction
+        clsOverallFunction = New RFunction
 
+        ucrSelectorTransposeColumns.Reset()
+        ucrNewDataframe.Reset()
+        NewDefaultName()
+
+        clsOverallFunction.SetRCommand("as.data.frame")
+        clsOverallFunction.SetAssignTo(ucrNewDataframe.GetText(), strTempDataframe:=ucrNewDataframe.GetText())
+        clsOverallFunction.AddParameter("x", clsRFunctionParameter:=clsTFunction)
+        clsTFunction.SetRCommand("t")
+
+        ucrBase.clsRsyntax.SetBaseRFunction(clsOverallFunction)
     End Sub
-    'set what happens when dialog is reopened
-    Private Sub ReOpenDialog()
 
-
+    Private Sub SetRCodeforControls(bReset As Boolean)
+        ucrReceiverColumsToTranspose.SetRCode(clsTFunction, bReset)
+        ucrNewDataframe.SetRCode(clsOverallFunction, bReset)
     End Sub
 
-    'this is what happens when Reset button is clicked
+    Private Sub TestOkEnabled()
+        If Not ucrReceiverColumsToTranspose.IsEmpty AndAlso ucrNewDataframe.IsComplete() Then
+            ucrBase.OKEnabled(True)
+        Else
+            ucrBase.OKEnabled(False)
+        End If
+    End Sub
+
     Private Sub ucrBase_ClickReset(sender As Object, e As EventArgs) Handles ucrBase.ClickReset
         SetDefaults()
+        SetRCodeforControls(True)
+        TestOkEnabled()
+    End Sub
+
+    Private Sub NewDefaultName()
+        If (Not ucrNewDataframe.bUserTyped) AndAlso ucrSelectorTransposeColumns.ucrAvailableDataFrames.cboAvailableDataFrames.Text <> "" Then
+            ucrNewDataframe.SetName(ucrSelectorTransposeColumns.ucrAvailableDataFrames.cboAvailableDataFrames.Text & "_transposed")
+        End If
+    End Sub
+
+    Private Sub CoreName_ControlValueChanged(ucrChangedControl As ucrCore) Handles ucrSelectorTransposeColumns.ControlValueChanged
+        NewDefaultName()
+    End Sub
+
+    Private Sub CoreControls_ControlContentsChanged(ucrChangedControl As ucrCore) Handles ucrReceiverColumsToTranspose.ControlContentsChanged, ucrNewDataframe.ControlContentsChanged
+        TestOkEnabled()
     End Sub
 End Class

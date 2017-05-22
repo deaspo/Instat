@@ -29,22 +29,28 @@ Public Class dlgFromLibrary
         If bFirstLoad Then
             InitialiseDialog()
             '
-            setDefaults()
+            SetDefaults()
             bFirstLoad = False
         End If
         TestOkEnabled()
     End Sub
 
-    Private Sub setDefaults()
+    Private Sub SetDefaults()
         rdoDefaultDatasets.Checked = True
         cboPackages.SelectedItem = "datasets"
         loadDatasets(cboPackages.SelectedItem.ToString)
+        EnableHelp()
     End Sub
 
     Private Sub InitialiseDialog()
+        ucrBase.iHelpTopicID = 156
         'fills the combo box
         clsDataFunction.SetRCommand("data")
         FillPackagesCombo()
+    End Sub
+
+    Private Sub ucrBase_ClickReset(sender As Object, e As EventArgs) Handles ucrBase.ClickReset
+        SetDefaults()
     End Sub
 
     Private Sub cmdLibraryCollection_Click(sender As Object, e As EventArgs) Handles cmdLibraryCollection.Click
@@ -77,10 +83,10 @@ Public Class dlgFromLibrary
         Dim i As Integer
         Dim lstAvailablePackages As CharacterVector
         cboPackages.Items.Clear()
-        lstAvailablePackages = frmMain.clsRLink.clsEngine.Evaluate(strPackages & "<-(.packages())").AsCharacter
+        lstAvailablePackages = frmMain.clsRLink.RunInternalScriptGetValue(strPackages & "<-(.packages())").AsCharacter
         For i = 0 To lstAvailablePackages.Length - 1
             Try
-                If frmMain.clsRLink.clsEngine.Evaluate("nrow(data(package = " & Chr(34) & lstAvailablePackages.AsCharacter(i) & Chr(34) & ")$results)").AsInteger(0) > 0 Then
+                If frmMain.clsRLink.RunInternalScriptGetValue("nrow(data(package = " & Chr(34) & lstAvailablePackages.AsCharacter(i) & Chr(34) & ")$results)").AsInteger(0) > 0 Then
                     cboPackages.Items.Add(lstAvailablePackages.AsCharacter(i))
                 End If
             Catch ex As Exception
@@ -103,8 +109,7 @@ Public Class dlgFromLibrary
     Private Sub loadDatasets(strPackage As String)
         Try
             Dim dfPackage As DataFrame
-            frmMain.clsRLink.clsEngine.Evaluate(strLibraryTemp & "<-data.frame(data(package =" & Chr(34) & strPackage & Chr(34) & ")$results[1:nrow(data(package =" & Chr(34) & strPackage & Chr(34) & ")$results),3:4])")
-            dfPackage = frmMain.clsRLink.clsEngine.GetSymbol(strLibraryTemp).AsDataFrame
+            dfPackage = frmMain.clsRLink.RunInternalScriptGetValue("data.frame(data(package =" & Chr(34) & strPackage & Chr(34) & ")$results[1:nrow(data(package =" & Chr(34) & strPackage & Chr(34) & ")$results),3:4])").AsDataFrame
             If dfPackage.RowCount > 1 Then
                 FillListView(dfDataframe:=dfPackage)
             End If
@@ -123,15 +128,18 @@ Public Class dlgFromLibrary
         ucrBase.clsRsyntax.SetAssignTo(chkString(lstCollection.SelectedItems(0).SubItems(0).Text), strTempDataframe:=chkString(lstCollection.SelectedItems(0).SubItems(0).Text))
         ucrBase.clsRsyntax.AddParameter("x", chkString(lstCollection.SelectedItems(0).SubItems(0).Text))
         clsDataFunction.AddParameter("X", chkString(lstCollection.SelectedItems(0).SubItems(0).Text))
+
         TestOkEnabled()
     End Sub
 
     Private Sub TestOkEnabled()
-        If rdoDefaultDatasets.Checked AndAlso lstCollection.SelectedItems.Count > 0 OrElse rdoInstatCollection.Checked Then
+        If rdoDefaultDatasets.Checked AndAlso lstCollection.SelectedItems.Count > 0 Then
             ucrBase.OKEnabled(True)
         Else
             ucrBase.OKEnabled(False)
         End If
+
+        EnableHelp()
     End Sub
 
     Private Function chkString(ByVal strValue As String)
@@ -152,4 +160,21 @@ Public Class dlgFromLibrary
             frmMain.clsRLink.RunScript(clsDataFunction.ToScript(), strComment:=ucrBase.strComment)
         End If
     End Sub
+
+    Private Sub cmdHelp_Click(sender As Object, e As EventArgs) Handles cmdHelp.Click
+        Dim clsHelp As New RFunction
+        clsHelp.SetRCommand("help")
+        clsHelp.AddParameter("topic", Chr(34) & lstCollection.SelectedItems(0).Text & Chr(34))
+        clsHelp.AddParameter("help_type", Chr(34) & "html" & Chr(34))
+        frmMain.clsRLink.RunScript(clsHelp.ToScript, strComment:=" dlgOpenFromLibrary Opening help page for" & " " & lstCollection.SelectedItems(0).Text & " " & "dataset")
+    End Sub
+
+    Private Sub EnableHelp()
+        If rdoDefaultDatasets.Checked AndAlso lstCollection.SelectedItems.Count > 0 Then
+            cmdHelp.Enabled = True
+        Else
+            cmdHelp.Enabled = False
+        End If
+    End Sub
+
 End Class

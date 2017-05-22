@@ -20,6 +20,7 @@ Public Class ucrReceiverSingle
     Dim strDataFrameName As String
     Public strCurrDataType As String
     Public Event WithMeSelectionChanged(ucrChangedReceiver As ucrReceiverSingle)
+    Public bAutoFill As Boolean = False
 
     Public Sub New()
         ' This call is required by the designer.
@@ -31,10 +32,32 @@ Public Class ucrReceiverSingle
     End Sub
 
     Public Overrides Sub AddSelected()
-        Dim objItem As ListViewItem
+        'Dim tempObjects(Selector.lstAvailableVariable.SelectedItems.Count - 1) As ListViewItem
+
+        If Selector.lstAvailableVariable.SelectedItems.Count = 1 Then
+            'Selector.lstAvailableVariable.SelectedItems.CopyTo(tempObjects, 0)
+            Add(Selector.lstAvailableVariable.SelectedItems.Item(0).Text, Selector.lstAvailableVariable.SelectedItems.Item(0).Tag)
+        Else
+            'Error?
+        End If
+
+    End Sub
+
+    Public Overrides Sub Add(strItem As String, Optional strDataFrame As String = "")
         Dim clsGetDataType As New RFunction
-        Dim tempObjects(Selector.lstAvailableVariable.SelectedItems.Count - 1) As ListViewItem
         Dim strCurrentItemType As String
+
+        'Would prefer to have remove selected but that will first clear the receiver
+        'This has issues when reading RSyntax and filling receivers e.g. in Specific plot dialogs
+        'Because it modifies the list of parameters it is looping through when clearing first, crashing
+        'Below is the part from RemoveSelected() that is needed
+        'This is only an issue with single receiver
+        'If RemoveSelected() later contains other things, this may need to be updated.
+        'RemoveSelected()
+        If Selector IsNot Nothing Then
+            Selector.RemoveFromVariablesList(txtReceiverSingle.Text)
+        End If
+        MyBase.Add(strItem, strDataFrame)
 
         If bTypeSet Then
             strCurrentItemType = strType
@@ -44,24 +67,27 @@ Public Class ucrReceiverSingle
         clsGetDataType.SetRCommand(frmMain.clsRLink.strInstatDataObject & "$get_variables_metadata")
         clsGetDataType.AddParameter("property", "data_type_label")
         If txtReceiverSingle.Enabled Then
-            Selector.lstAvailableVariable.SelectedItems.CopyTo(tempObjects, 0)
-            For Each objItem In tempObjects
-                If strCurrentItemType = "column" Then
-                    clsGetDataType.AddParameter("data_name", Chr(34) & objItem.Tag & Chr(34))
-                    clsGetDataType.AddParameter("column", Chr(34) & objItem.Text & Chr(34))
-                    strCurrDataType = frmMain.clsRLink.RunInternalScriptGetValue(clsGetDataType.ToScript()).AsCharacter(0)
-                Else
-                    strCurrDataType = ""
+            If strCurrentItemType = "column" Then
+                If strDataFrame = "" Then
+                    SetMeAsReceiver()
+                    For i = 0 To Selector.lstAvailableVariable.Items.Count - 1
+                        If Selector.lstAvailableVariable.Items(i).Text = strItem Then
+                            strDataFrame = Selector.lstAvailableVariable.Items(i).Tag
+                        End If
+                    Next
                 End If
-                SetSelected(objItem.Text, objItem.Tag)
-            Next
+                If strDataFrame <> "" Then
+                    clsGetDataType.AddParameter("data_name", Chr(34) & strDataFrame & Chr(34))
+                    clsGetDataType.AddParameter("column", Chr(34) & strItem & Chr(34))
+                    strCurrDataType = frmMain.clsRLink.RunInternalScriptGetValue(clsGetDataType.ToScript()).AsCharacter(0)
+                End If
+            Else
+                strCurrDataType = ""
+            End If
+            strDataFrameName = strDataFrame
+            txtReceiverSingle.Text = strItem
+            Selector.AddToVariablesList(strItem)
         End If
-    End Sub
-
-    Public Sub SetSelected(strColumn As String, strDataFrame As String)
-        strDataFrameName = strDataFrame
-        txtReceiverSingle.Text = strColumn
-        Selector.AddToVariablesList(strColumn)
     End Sub
 
     Public Overrides Sub RemoveSelected()
@@ -105,7 +131,7 @@ Public Class ucrReceiverSingle
             Select Case strCurrentType
                 Case "column"
                     clsGetVariablesFunc.SetRCommand(frmMain.clsRLink.strInstatDataObject & "$get_columns_from_data")
-                    clsGetVariablesFunc.AddParameter("col_name", GetVariableNames())
+                    clsGetVariablesFunc.AddParameter("col_names", GetVariableNames())
                     If bForceAsDataFrame Then
                         clsGetVariablesFunc.AddParameter("force_as_data_frame", "TRUE")
                     Else
@@ -134,6 +160,15 @@ Public Class ucrReceiverSingle
                 Case "model"
                     clsGetVariablesFunc.SetRCommand(frmMain.clsRLink.strInstatDataObject & "$get_models")
                     clsGetVariablesFunc.AddParameter("model_name", GetVariableNames())
+                Case "dataframe"
+                    clsGetVariablesFunc.SetRCommand(frmMain.clsRLink.strInstatDataObject & "$get_data_frame")
+                    clsGetVariablesFunc.AddParameter("data_name", GetVariableNames())
+                Case "key"
+                    clsGetVariablesFunc.SetRCommand(frmMain.clsRLink.strInstatDataObject & "$get_keys")
+                    clsGetVariablesFunc.AddParameter("key_name", GetVariableNames())
+                Case "link"
+                    clsGetVariablesFunc.SetRCommand(frmMain.clsRLink.strInstatDataObject & "$get_links")
+                    clsGetVariablesFunc.AddParameter("link_name", GetVariableNames())
             End Select
 
             'TODO make this an option set in Options menu
@@ -166,13 +201,9 @@ Public Class ucrReceiverSingle
         Return strDataFrameName
     End Function
 
-    Public Event SelectionChanged(sender As Object, e As EventArgs)
-
-
-
     Private Sub txtReceiverSingle_TextChanged(sender As Object, e As EventArgs) Handles txtReceiverSingle.TextChanged
         OnValueChanged(sender, e)
-        RaiseEvent SelectionChanged(sender, e)
+        OnSelectionChanged()
     End Sub
 
     Public Overrides Sub SetColor()
@@ -189,13 +220,10 @@ Public Class ucrReceiverSingle
         End If
     End Sub
 
-    Private Sub RemoveToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles RemoveToolStripMenuItem.Click
-        RemoveSelected()
-    End Sub
-
     Public Sub SetStackedFactorMode(bDisableReceiver As Boolean)
+        'This sub is called by ucrVariableAsFactors on dialogs such as BoxPLot, where the ReiceiverSingle, used as factor receiver for the x aesthetics, need to take as fixed value the variable "variable" created to distinguish the variables from the multiple receiver that will have been stacked into one variable called "value".
         If bDisableReceiver Then
-            SetSelected("variable", "")
+            Add("variable", "")
             Me.Enabled = False
             Selector.RemoveFromVariablesList("variable")
         Else
@@ -206,5 +234,53 @@ Public Class ucrReceiverSingle
 
     Private Sub ucrReceiverSingle_SelectionChanged(sender As Object, e As EventArgs) Handles Me.SelectionChanged
         RaiseEvent WithMeSelectionChanged(Me)
+    End Sub
+
+    Private Sub mnuRightClickCopy_Click(sender As Object, e As EventArgs) Handles mnuRightClickCopy.Click
+        txtReceiverSingle.Copy()
+    End Sub
+
+    Private Sub mnuRightClickRemove_Click(sender As Object, e As EventArgs) Handles mnuRightClickRemove.Click
+        RemoveSelected()
+    End Sub
+
+    Public Overrides Sub UpdateControl(Optional bReset As Boolean = False)
+        MyBase.UpdateControl(bReset)
+    End Sub
+
+    Private Sub Selector_DataFrameChanged() Handles ucrSelector.DataFrameChanged
+        CheckAutoFill()
+    End Sub
+
+    Public Sub CheckAutoFill()
+        If bAutoFill Then
+            If Selector IsNot Nothing Then
+                If lstIncludedMetadataProperties.Count > 0 OrElse lstExcludedMetadataProperties.Count > 0 OrElse Selector.lstIncludedMetadataProperties.Count > 0 OrElse Selector.lstIncludedMetadataProperties.Count Then
+                    SetMeAsReceiver()
+                    If Selector.lstAvailableVariable.Items.Count = 1 Then
+                        Add(Selector.lstAvailableVariable.Items(0).Text, Selector.strCurrentDataFrame)
+                    End If
+                End If
+            End If
+        End If
+    End Sub
+
+    Private Sub ParentForm_Shown()
+        If bFirstShown Then
+            CheckAutoFill()
+            bFirstShown = False
+        End If
+    End Sub
+
+    Protected Overrides Sub Selector_ResetAll()
+        MyBase.Selector_ResetAll()
+        CheckAutoFill()
+    End Sub
+
+    Private Sub ucrReceiverSingle_Load(sender As Object, e As EventArgs) Handles Me.Load
+        If bFirstLoad Then
+            AddHandler ParentForm.Shown, AddressOf ParentForm_Shown
+            bFirstLoad = False
+        End If
     End Sub
 End Class

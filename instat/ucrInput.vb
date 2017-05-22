@@ -14,12 +14,15 @@
 ' You should have received a copy of the GNU General Public License k
 ' along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+Imports instat
+
 Public Class ucrInput
-    Protected bUserTyped As Boolean = False
+    Public bUserTyped As Boolean = False
     Public Event NameChanged()
+    Public Event ContentsChanged()
     Protected strValidationType As String = "None"
     Dim strReservedWords() As String = ({"if", "else", "repeat", "while", "function", "for", "in", "next", "break", "TRUE", "FALSE", "NULL", "Inf", "NaN", "NA", "NA_integer_", "NA_real_", "NA_complex_", "NA_character_"})
-    Protected clsRList As New RFunction
+    Public clsRList As New RFunction
     Protected dcmMinimum As Decimal = Decimal.MinValue
     Protected dcmMaximum As Decimal = Decimal.MaxValue
     Protected bMinimumIncluded, bMaximumIncluded As Boolean
@@ -27,8 +30,23 @@ Public Class ucrInput
     Protected strDefaultPrefix As String = ""
     Protected WithEvents ucrDataFrameSelector As ucrDataFrame
     Protected bIsReadOnly As Boolean = False
+    Public bAutoChangeOnLeave As Boolean = False
+    Protected bAllowInf As Boolean = False
+    Private bLastSilent As Boolean = False
+    Private bPrivateAddQuotesIfUnrecognised As Boolean = True
+    Protected dctDisplayParameterValues As New Dictionary(Of String, String)
+
+    Public Sub New()
+
+        ' This call is required by the designer.
+        InitializeComponent()
+
+        ' Add any initialization after the InitializeComponent() call.
+        bUpdateRCodeFromControl = True
+    End Sub
 
     Public Overridable Sub SetName(strName As String, Optional bSilent As Boolean = False)
+        bLastSilent = bSilent
     End Sub
 
     Public Overridable Function GetText() As String
@@ -42,6 +60,26 @@ Public Class ucrInput
     Public Sub OnNameChanged()
         Me.Text = Me.GetText()
         RaiseEvent NameChanged()
+        OnControlValueChanged()
+    End Sub
+
+    Public Overrides Sub UpdateParameter(clsTempParam As RParameter)
+        If bChangeParameterValue AndAlso clsTempParam IsNot Nothing Then
+            If dctDisplayParameterValues.ContainsKey(GetText()) Then
+                clsTempParam.SetArgumentValue(dctDisplayParameterValues(GetText()))
+            Else
+                If AddQuotesIfUnrecognised Then
+                    clsTempParam.SetArgumentValue(Chr(34) & GetText() & Chr(34))
+                Else
+                    clsTempParam.SetArgumentValue(GetText())
+                End If
+            End If
+        End If
+    End Sub
+
+    Public Sub OnContentsChanged()
+        RaiseEvent ContentsChanged()
+        OnControlContentsChanged()
     End Sub
 
     Public Function UserTyped() As Boolean
@@ -92,23 +130,32 @@ Public Class ucrInput
 
     Public Sub SetDefaultName()
         If strDefaultPrefix <> "" Then
-            If strDefaultType = "Column" AndAlso (ucrDataFrameSelector IsNot Nothing) Then
-                SetName(frmMain.clsRLink.GetDefaultColumnNames(strDefaultPrefix, ucrDataFrameSelector.cboAvailableDataFrames.Text))
+            If strDefaultType = "Column" Then
+                If ucrDataFrameSelector IsNot Nothing AndAlso ucrDataFrameSelector.cboAvailableDataFrames.Text <> "" AndAlso frmMain.clsRLink.DataFrameExists(ucrDataFrameSelector.cboAvailableDataFrames.Text) Then
+                    SetName(frmMain.clsRLink.GetDefaultColumnNames(strDefaultPrefix, ucrDataFrameSelector.cboAvailableDataFrames.Text))
+                Else
+                    SetName("")
+                End If
             ElseIf strDefaultType = "Model" Then
-                If ucrDataFrameSelector IsNot Nothing Then
+                If ucrDataFrameSelector IsNot Nothing AndAlso ucrDataFrameSelector.cboAvailableDataFrames.Text <> "" Then
                     SetName(frmMain.clsRLink.GetNextDefault(strDefaultPrefix, frmMain.clsRLink.GetModelNames(ucrDataFrameSelector.cboAvailableDataFrames.Text)))
                 Else
                     SetName(frmMain.clsRLink.GetNextDefault(strDefaultPrefix, frmMain.clsRLink.GetModelNames()))
                 End If
             ElseIf strDefaultType = "Data Frame" Then
+                SetName(frmMain.clsRLink.GetNextDefault(strDefaultPrefix, frmMain.clsRLink.GetDataFrameNames()))
             ElseIf strDefaultType = "Graph" Then
-                If ucrDataFrameSelector IsNot Nothing Then
+                If ucrDataFrameSelector IsNot Nothing AndAlso ucrDataFrameSelector.cboAvailableDataFrames.Text <> "" Then
                     SetName(frmMain.clsRLink.GetNextDefault(strDefaultPrefix, frmMain.clsRLink.GetGraphNames(ucrDataFrameSelector.cboAvailableDataFrames.Text)))
                 Else
                     SetName(frmMain.clsRLink.GetNextDefault(strDefaultPrefix, frmMain.clsRLink.GetGraphNames()))
                 End If
-            ElseIf strDefaultType = "Filter" AndAlso (ucrDataFrameSelector IsNot Nothing) Then
-                SetName(frmMain.clsRLink.GetNextDefault(strDefaultPrefix, frmMain.clsRLink.GetFilterNames(ucrDataFrameSelector.cboAvailableDataFrames.Text)))
+            ElseIf strDefaultType = "Filter" Then
+                If ucrDataFrameSelector IsNot Nothing AndAlso ucrDataFrameSelector.cboAvailableDataFrames.Text <> "" Then
+                    SetName(frmMain.clsRLink.GetNextDefault(strDefaultPrefix, frmMain.clsRLink.GetFilterNames(ucrDataFrameSelector.cboAvailableDataFrames.Text)))
+                Else
+                    SetName("")
+                End If
             End If
         End If
     End Sub
@@ -153,8 +200,9 @@ Public Class ucrInput
         strValidationType = "List"
     End Sub
 
-    Public Sub SetValidationTypeAsNumericList()
+    Public Sub SetValidationTypeAsNumericList(Optional bNewAllowInf As Boolean = False)
         strValidationType = "NumericList"
+        bAllowInf = bNewAllowInf
     End Sub
 
     Public Function IsValid(strText As String) As Boolean
@@ -173,7 +221,7 @@ Public Class ucrInput
             Case "List"
                 iType = ValidateList(strText, False)
             Case "NumericList"
-                iType = ValidateList(strText, True)
+                iType = ValidateList(strText, True, bAllowInf)
         End Select
         Return iType
     End Function
@@ -297,10 +345,10 @@ Public Class ucrInput
     ' 0 : string is valid
     ' 1 : an item is empty
     ' 2 : an item is not numeric
-    Public Function ValidateList(strText As String, Optional bIsNumericInput As Boolean = False) As Integer
+    Public Function ValidateList(strText As String, Optional bIsNumericInput As Boolean = False, Optional bAllowInf As Boolean = False) As Integer
         Dim strItems As String()
         Dim strTemp As String
-
+        Dim i As Integer = 0
         If strText = "" Then Return 0
         clsRList.ClearParameters()
         clsRList.SetRCommand("c")
@@ -312,7 +360,7 @@ Public Class ucrInput
                 If strVal = "" Then Return 1
                 Dim clsTempParam As New RParameter
                 If bIsNumericInput Then
-                    If Not IsNumeric(strVal) Then
+                    If Not IsNumeric(strVal) AndAlso (Not (bAllowInf AndAlso ({"Inf", "-Inf"}.Contains(strVal)))) Then
                         Return 2
                         'MsgBox("Textbox requires a list of numbers separated by commas.", vbOKOnly, "Validation Error")
                         'txtNumericItems.Focus()
@@ -321,7 +369,9 @@ Public Class ucrInput
                 Else
                     clsTempParam.SetArgumentValue(Chr(34) & strVal & Chr(34))
                 End If
+                clsTempParam.Position = i
                 clsRList.AddParameter(clsTempParam)
+                i = i + 1
             Next
         End If
         Return 0
@@ -341,11 +391,11 @@ Public Class ucrInput
         If Not bUserTyped Then
             SetDefaultName()
         End If
-        RaiseEvent NameChanged()
+        'RaiseEvent NameChanged()
     End Sub
 
     Private Sub ucrInput_TextChanged(sender As Object, e As EventArgs) Handles Me.TextChanged
-        SetName(Me.Text)
+        SetName(Me.Text, bLastSilent)
     End Sub
 
     Public Overridable Property IsReadOnly() As Boolean
@@ -356,4 +406,70 @@ Public Class ucrInput
             bIsReadOnly = bReadOnly
         End Set
     End Property
+
+    Protected Overrides Sub SetToValue(objTemp As Object)
+        If objTemp IsNot Nothing Then
+            SetName(objTemp.ToString())
+        End If
+    End Sub
+
+    Public Overrides Function GetValueToSet() As Object
+        Dim clsMainParameter As RParameter
+
+        clsMainParameter = GetParameter()
+        If clsMainParameter IsNot Nothing Then
+            If clsMainParameter.bIsString Then
+                If dctDisplayParameterValues.ContainsKey(clsMainParameter.strArgumentValue) Then
+                    Return clsMainParameter.strArgumentValue
+                Else
+                    If AddQuotesIfUnrecognised Then
+                        Return clsMainParameter.strArgumentValue.Trim(Chr(34))
+                    Else
+                        Return clsMainParameter.strArgumentValue
+                    End If
+                End If
+            ElseIf clsMainParameter.bIsFunction OrElse clsMainParameter.bIsOperator Then
+                Return clsMainParameter.clsArgumentCodeStructure
+            Else
+                Return ""
+            End If
+        Else
+            Return ""
+        End If
+    End Function
+
+    ' key = parameter value
+    ' value = item text
+    Public Sub SetParameterValueItemsPairs(dctNewDisplayParameterValues As Dictionary(Of String, String))
+        dctDisplayParameterValues = dctNewDisplayParameterValues
+    End Sub
+
+    Public Sub AddToParameterValueItemsPairs(kvpNewPair As KeyValuePair(Of String, String))
+        AddToParameterValueItemsPairs(kvpNewPair.Key, kvpNewPair.Value)
+    End Sub
+
+    Public Sub AddToParameterValueItemsPairs(strDisplayValue As String, strParameterValue As String)
+        dctDisplayParameterValues.Add(strDisplayValue, strParameterValue)
+    End Sub
+
+    Public Property AddQuotesIfUnrecognised As Boolean
+        Get
+            Return bPrivateAddQuotesIfUnrecognised
+        End Get
+        Set(bValue As Boolean)
+            bPrivateAddQuotesIfUnrecognised = bValue
+            If GetText() IsNot Nothing Then
+                SetName(GetText().Trim(Chr(34)))
+            End If
+        End Set
+    End Property
+
+    Public Overrides Function ControlValueContainedIn(lstTemp() As Object) As Boolean
+        For Each objTemp As Object In lstTemp
+            If objTemp.ToString() = GetText() Then
+                Return True
+            End If
+        Next
+        Return False
+    End Function
 End Class

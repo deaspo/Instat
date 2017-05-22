@@ -14,7 +14,11 @@
 ' You should have received a copy of the GNU General Public License k
 ' along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+Imports RDotNet
+
 Public Class ucrReceiverMultiple
+
+    Public bSingleType As Boolean = False
 
     Private Sub ucrReceiverMultiple_Load(sender As Object, e As EventArgs) Handles Me.Load
         If bFirstLoad Then
@@ -26,29 +30,16 @@ Public Class ucrReceiverMultiple
         End If
     End Sub
 
-    Public Event SelectionChanged()
-
     Public Overrides Sub AddSelected()
-        Dim objItem As ListViewItem
-        Dim tempObjects(Selector.lstAvailableVariable.SelectedItems.Count - 1) As ListViewItem
-        Dim grpCurr As New ListViewGroup
+        Dim lstItems(Selector.lstAvailableVariable.SelectedItems.Count - 1) As KeyValuePair(Of String, String)
+        Dim lviTemp As ListViewItem
+        Dim i As Integer = 0
 
-        Selector.lstAvailableVariable.SelectedItems.CopyTo(tempObjects, 0)
-        For Each objItem In tempObjects
-            If Not GetCurrItemNames().Contains(objItem.Text) Then
-                If Not GetCurrGroupNames().Contains(objItem.Tag) Then
-                    grpCurr = New ListViewGroup(key:=objItem.Tag, headerText:=objItem.Tag)
-                    lstSelectedVariables.Groups.Add(grpCurr)
-                Else
-                    grpCurr = lstSelectedVariables.Groups(GetCurrGroupNames().IndexOf(objItem.Tag))
-                End If
-                lstSelectedVariables.Items.Add(objItem.Text).Group = grpCurr
-                lstSelectedVariables.Items(lstSelectedVariables.Items.Count - 1).Tag = objItem.Tag
-                Selector.AddToVariablesList(objItem.Text)
-            End If
+        For Each lviTemp In Selector.lstAvailableVariable.SelectedItems
+            lstItems(i) = New KeyValuePair(Of String, String)(lviTemp.Tag, lviTemp.Text)
+            i = i + 1
         Next
-        RaiseEvent SelectionChanged()
-
+        AddMultiple(lstItems)
     End Sub
 
     Private Function GetCurrItemNames() As List(Of String)
@@ -82,17 +73,30 @@ Public Class ucrReceiverMultiple
                 Selector.RemoveFromVariablesList(objItem.Text)
             Next
         End If
-        RaiseEvent SelectionChanged()
+        OnSelectionChanged()
         MyBase.RemoveSelected()
+    End Sub
+
+    Public Overrides Sub Remove(strItems() As String)
+        MyBase.Remove(strItems)
+        Dim strTempItem As String
+
+        For Each strTempItem In strItems
+            lstSelectedVariables.Items.RemoveByKey(strTempItem)
+            Selector.RemoveFromVariablesList(strTempItem)
+        Next
+        OnSelectionChanged()
     End Sub
 
     Public Overrides Sub Clear()
         Dim lviVar As ListViewItem
-        For Each lviVar In lstSelectedVariables.Items
-            lviVar.Selected = True
-        Next
-        RemoveSelected()
+        Dim strItems As New List(Of String)
 
+        For Each lviVar In lstSelectedVariables.Items
+            strItems.Add(lviVar.Text)
+        Next
+        Remove(strItems.ToArray())
+        'RemoveSelected()
     End Sub
 
     Public Overrides Function IsEmpty() As Boolean
@@ -153,6 +157,15 @@ Public Class ucrReceiverMultiple
                 Case "model"
                     clsGetVariablesFunc.SetRCommand(frmMain.clsRLink.strInstatDataObject & "$get_models")
                     clsGetVariablesFunc.AddParameter("model_name", GetVariableNames())
+                Case "dataframe"
+                    clsGetVariablesFunc.SetRCommand(frmMain.clsRLink.strInstatDataObject & "$get_data_frame")
+                    clsGetVariablesFunc.AddParameter("data_name", GetVariableNames())
+                Case "key"
+                    clsGetVariablesFunc.SetRCommand(frmMain.clsRLink.strInstatDataObject & "$get_keys")
+                    clsGetVariablesFunc.AddParameter("key_name", GetVariableNames())
+                Case "link"
+                    clsGetVariablesFunc.SetRCommand(frmMain.clsRLink.strInstatDataObject & "$get_links")
+                    clsGetVariablesFunc.AddParameter("link_name", GetVariableNames())
             End Select
             'TODO make this an option set in Options menu
             'clsRSyntax.SetAssignTo(MakeValidRString(strCurrDataFrame) & "_temp", clsFunction:=clsGetVariablesFunc)
@@ -178,6 +191,9 @@ Public Class ucrReceiverMultiple
                 clsColumnFunction.AddParameter("col_names", Chr(34) & strColumn & Chr(34))
                 If frmMain.clsInstatOptions.bIncludeRDefaultParameters Then
                     clsColumnFunction.AddParameter("force_as_data_frame", "FALSE")
+                End If
+                If Not bUseFilteredData Then
+                    clsColumnFunction.AddParameter("use_current_filter", "FALSE")
                 End If
                 lstColumnFunctions.Add(clsColumnFunction)
             Next
@@ -284,9 +300,146 @@ Public Class ucrReceiverMultiple
         End If
     End Function
 
-    Public Sub Add(strItems As String())
-        For Each strItem In strItems
-            MyBase.Add(strItem)
+    Public Sub AddMultiple(lstItems As KeyValuePair(Of String, String)())
+        Dim kvpTempItem As KeyValuePair(Of String, String)
+        Dim grpCurr As New ListViewGroup
+
+        For Each kvpTempItem In lstItems
+            If Not GetCurrItemNames().Contains(kvpTempItem.Value) Then
+                If Not GetCurrGroupNames().Contains(kvpTempItem.Key) Then
+                    grpCurr = New ListViewGroup(key:=kvpTempItem.Key, headerText:=kvpTempItem.Key)
+                    lstSelectedVariables.Groups.Add(grpCurr)
+                Else
+                    grpCurr = lstSelectedVariables.Groups(GetCurrGroupNames().IndexOf(kvpTempItem.Key))
+                End If
+                lstSelectedVariables.Items.Add(kvpTempItem.Value).Group = grpCurr
+                lstSelectedVariables.Items(lstSelectedVariables.Items.Count - 1).Tag = kvpTempItem.Key
+                lstSelectedVariables.Items(lstSelectedVariables.Items.Count - 1).Name = kvpTempItem.Value
+                Selector.AddToVariablesList(kvpTempItem.Value)
+            End If
         Next
+        OnSelectionChanged()
+    End Sub
+
+    Public Overrides Sub Add(strItem As String, Optional strDataFrame As String = "")
+        Dim kvpItems(0) As KeyValuePair(Of String, String)
+        If strDataFrame = "" Then
+            For i = 0 To Selector.lstAvailableVariable.Items.Count - 1
+                If Selector.lstAvailableVariable.Items(i).Text = strItem Then
+                    strDataFrame = Selector.lstAvailableVariable.Items(i).Tag
+                End If
+            Next
+        End If
+        kvpItems(0) = New KeyValuePair(Of String, String)(strDataFrame, strItem)
+        AddMultiple(kvpItems)
+    End Sub
+
+    Public Sub AddItemsWithMetadataProperty(strCurrentDataFrame As String, strProperty As String, strValues As String())
+        If Selector IsNot Nothing Then
+            SetMeAsReceiver()
+            frmMain.clsRLink.SelectColumnsWithMetadataProperty(Me, strCurrentDataFrame, strProperty, strValues)
+        End If
+    End Sub
+
+    Public Function GetCurrentItemTypes(Optional bUnique As Boolean = False) As List(Of String)
+        Dim clsGetDataType As New RFunction
+        Dim strDataTypes As New List(Of String)
+        Dim strDataFrame As String
+        Dim strCurrentType As String
+
+        If Selector IsNot Nothing Then
+            If bTypeSet Then
+                strCurrentType = strType
+            Else
+                strCurrentType = Selector.GetItemType()
+            End If
+
+            If strCurrentType = "column" AndAlso GetDataFrameNames().Count = 1 Then
+                strDataFrame = GetDataFrameNames()(0)
+                clsGetDataType.SetRCommand(frmMain.clsRLink.strInstatDataObject & "$get_variables_metadata")
+                clsGetDataType.AddParameter("property", "data_type_label")
+                clsGetDataType.AddParameter("data_name", Chr(34) & strDataFrame & Chr(34))
+                clsGetDataType.AddParameter("column", GetVariableNames())
+                strDataTypes = frmMain.clsRLink.RunInternalScriptGetValue(clsGetDataType.ToScript()).AsCharacter.ToList()
+                If bUnique Then
+                    strDataTypes = strDataTypes.Distinct().ToList()
+                End If
+            End If
+        End If
+        Return strDataTypes
+    End Function
+
+    Public Function IsSingleType() As Boolean
+        Return GetCurrentItemTypes(True).Count = 1
+    End Function
+
+    Public Function IsAllNumeric() As Boolean
+        Dim lstUniqueTypes As List(Of String)
+        Dim i As Integer
+
+        lstUniqueTypes = GetCurrentItemTypes(True)
+        For i = 0 To lstUniqueTypes.Count - 1
+            If lstUniqueTypes(i) = "integer" Then
+                lstUniqueTypes(i) = "numeric"
+            End If
+        Next
+        lstUniqueTypes = lstUniqueTypes.Distinct.ToList()
+        Return lstUniqueTypes.Count = 1
+    End Function
+
+    ' Categorical is defined as everything that isnt numeric
+    ' This may change as more types are added
+    Public Function IsAllCategorical() As Boolean
+        Dim lstUniqueTypes As List(Of String)
+        Dim i As Integer
+        Dim bAllCat As Boolean
+
+        bAllCat = True
+        lstUniqueTypes = GetCurrentItemTypes(True)
+        For i = 0 To lstUniqueTypes.Count - 1
+            If lstUniqueTypes(i) = "integer" OrElse lstUniqueTypes(i) = "numeric" Then
+                bAllCat = False
+                Exit For
+            End If
+        Next
+        Return bAllCat
+    End Function
+
+    Public Sub CheckSingleType()
+        Dim strVariableTypes As List(Of String)
+        Dim strVarType As String
+
+        If bSingleType Then
+            If (Not IsEmpty()) Then
+                strVariableTypes = GetCurrentItemTypes(True)
+                If strVariableTypes.Count > 1 AndAlso Not (strVariableTypes.Count = 2 AndAlso strVariableTypes.Contains("numeric") AndAlso strVariableTypes.Contains("integer")) AndAlso Not (strVariableTypes.Count = 2 AndAlso strVariableTypes.Contains("factor") AndAlso strVariableTypes.Contains("ordered,factor")) Then
+                    MsgBox("Cannot add these variables. All variables must be of the same data type.", MsgBoxStyle.OkOnly, "Cannot add variables.")
+                    Clear()
+                Else
+                    If strVariableTypes(0) = "integer" Then
+                        SetDataType("numeric")
+                    ElseIf strVariableTypes(0) = "ordered,factor" Then
+                        SetDataType("factor")
+                    Else
+                        SetDataType(strVariableTypes(0))
+                    End If
+                End If
+            Else
+                RemoveIncludedMetadataProperty(strProperty:="class")
+            End If
+        Else
+            ' Removed as this was causing data type to be removed on reset for any receiver
+            ' Left as comment in case this cause other issues
+            'RemoveIncludedMetadataProperty(strProperty:="class")
+        End If
+    End Sub
+
+    Public Sub SetSingleTypeStatus(bIsSingleType As Boolean)
+        bSingleType = bIsSingleType
+        CheckSingleType()
+    End Sub
+
+    Private Sub ucrReceiverMultiple_SelectionChanged(sender As Object, e As EventArgs) Handles Me.SelectionChanged
+        CheckSingleType()
     End Sub
 End Class

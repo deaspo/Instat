@@ -18,112 +18,119 @@ Imports instat.Translations
 
 Public Class dlgRowNamesOrNumbers
     Public bFirstLoad As Boolean = True
+    Private bReset As Boolean = True
     Dim sort As RFunction
 
     Private Sub dlgRowNamesOrNumbers_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-
+        autoTranslate(Me)
         If bFirstLoad Then
             InitialiseDialog()
-            SetDefaults()
             bFirstLoad = False
         End If
-        autoTranslate(Me)
 
+        If bReset Then
+            SetDefaults()
+        End If
+        SetRCodeForControls(bReset)
+        bReset = False
+        TestOKEnabled()
+    End Sub
+
+    Private Sub TestOKEnabled()
+        If (ucrSelectorRowNames.ucrAvailableDataFrames.cboAvailableDataFrames.Text = "") OrElse (rdoCopyfromColumn.Checked AndAlso ucrReceiverRowNames.IsEmpty) Then
+            ucrBase.OKEnabled(False)
+        Else
+            ucrBase.OKEnabled(True)
+        End If
     End Sub
 
     Private Sub InitialiseDialog()
+        ucrBase.iHelpTopicID = 178
 
-        ucrReceiverSingleRownamesOrNumbers.Selector = ucrSelectorByDataFrameAddRemoveforRownamesOrNumbers
-        ucrReceiverSingleRownamesOrNumbers.SetMeAsReceiver()
-        ucrNewColumnNameforRownamesOrNumbers.Visible = False
+        ucrPnlOverallOptions.AddRadioButton(rdoCopytoFirstColumn)
+        ucrPnlOverallOptions.AddRadioButton(rdoCopyfromColumn)
+        ucrPnlOverallOptions.AddRadioButton(rdoResetintoPositiveIntegers)
+        ucrPnlOverallOptions.AddRadioButton(rdoSortbyRowNames)
 
+        ucrPnlOverallOptions.AddFunctionNamesCondition(rdoCopytoFirstColumn, frmMain.clsRLink.strInstatDataObject & "$get_row_names")
+        ucrPnlOverallOptions.AddFunctionNamesCondition(rdoCopyfromColumn, frmMain.clsRLink.strInstatDataObject & "$set_row_names")
+        ucrPnlOverallOptions.AddParameterPresentCondition(rdoCopyfromColumn, "row_names")
+        ucrPnlOverallOptions.AddFunctionNamesCondition(rdoResetintoPositiveIntegers, frmMain.clsRLink.strInstatDataObject & "$set_row_names")
+        ucrPnlOverallOptions.AddFunctionNamesCondition(rdoSortbyRowNames, frmMain.clsRLink.strInstatDataObject & "$sort_dataframe")
+
+        ucrPnlOverallOptions.AddToLinkedControls(ucrNewColumnName, {rdoCopytoFirstColumn}, bNewLinkedAddRemoveParameter:=True, bNewLinkedHideIfParameterMissing:=True)
+        ucrPnlOverallOptions.AddToLinkedControls(ucrReceiverRowNames, {rdoCopyfromColumn}, bNewLinkedAddRemoveParameter:=True, bNewLinkedHideIfParameterMissing:=True)
+        ucrPnlOverallOptions.AddToLinkedControls(ucrPnlSortOptions, {rdoSortbyRowNames}, bNewLinkedAddRemoveParameter:=True, bNewLinkedHideIfParameterMissing:=True)
+        ucrPnlOverallOptions.AddToLinkedControls(ucrChkAsNumeric, {rdoSortbyRowNames}, bNewLinkedAddRemoveParameter:=True, bNewLinkedHideIfParameterMissing:=True)
+
+        'ucrPnlSortOptions
+        ucrPnlSortOptions.SetParameter(New RParameter("decreasing", 3))
+        ucrPnlSortOptions.AddRadioButton(rdoSortAscending, "FALSE")
+        ucrPnlSortOptions.AddRadioButton(rdoSortDescending, "TRUE")
+        ucrPnlSortOptions.SetRDefault("TRUE")
+
+        ' selector
+        ucrSelectorRowNames.SetParameter(New RParameter("data_name", 0))
+        ucrSelectorRowNames.SetParameterIsString()
+
+        'ucrNewColumnName
+        ucrNewColumnName.SetIsTextBox()
+        ucrNewColumnName.SetPrefix("Row_names")
+        ucrNewColumnName.SetSaveTypeAsColumn()
+        ucrNewColumnName.SetDataFrameSelector(ucrSelectorRowNames.ucrAvailableDataFrames)
+        ucrNewColumnName.SetLabelText("Column Name:")
+        ucrNewColumnName.SetAssignToBooleans(bTempInsertColumnBefore:=True)
+
+        'ucrReceiverSingle
+        ucrReceiverRowNames.SetParameter(New RParameter("row_names", 1))
+        ucrReceiverRowNames.SetParameterIsRFunction()
+        ucrReceiverRowNames.Selector = ucrSelectorRowNames
+        ucrReceiverRowNames.SetMeAsReceiver()
+
+        'ucrChkAsNumeric
+        ucrChkAsNumeric.SetParameter(New RParameter("row_names_as_numeric"))
+        ucrChkAsNumeric.SetText("Treat Row Names as Numeric")
+        ucrChkAsNumeric.SetValuesCheckedAndUnchecked("TRUE", "FALSE")
+        ucrChkAsNumeric.SetRDefault("TRUE")
     End Sub
 
     Private Sub SetDefaults()
+        Dim clsDefaultFunction As New RFunction
+        ucrNewColumnName.Reset()
+        ucrSelectorRowNames.Reset()
 
-        ucrSelectorByDataFrameAddRemoveforRownamesOrNumbers.Enabled = False
-        ucrReceiverSingleRownamesOrNumbers.Enabled = False
-        rdoCopytoFirstColumn.Enabled = True
-        rdoResetintoPositiveIntegers.Enabled = True
-        chkDecreasingforRownamesOrNumbers.Visible = False
-        ucrNewColumnNameforRownamesOrNumbers.Visible = False
-        chkDecreasingforRownamesOrNumbers.Checked = False
+        clsDefaultFunction.SetRCommand(frmMain.clsRLink.strInstatDataObject & "$get_row_names")
+        clsDefaultFunction.SetAssignTo(strTemp:=ucrNewColumnName.GetText(), strTempDataframe:=ucrSelectorRowNames.ucrAvailableDataFrames.cboAvailableDataFrames.Text, strTempColumn:=ucrNewColumnName.GetText(), bInsertColumnBefore:=True)
+        ucrBase.clsRsyntax.SetBaseRFunction(clsDefaultFunction.Clone())
     End Sub
 
-    Private Sub ucrBaseRownamesOrNumbers_clickReset(sender As Object, e As EventArgs) Handles ucrBaseRownamesorNumbers.ClickReset
-
-        SetDefaults()
-
-    End Sub
-
-    Private Sub rdoCopytoFirstColumn_CheckedChanged(sender As Object, e As EventArgs) Handles rdoCopytoFirstColumn.CheckedChanged, rdoCopyfromColumn.CheckedChanged, rdoResetintoPositiveIntegers.CheckedChanged, rdoSortbyRowNamesorNumbers.CheckedChanged
-
-
-        ucrBaseRownamesorNumbers.clsRsyntax.SetAssignTo("")
-        ucrBaseRownamesorNumbers.clsRsyntax.ClearParameters()
-
+    Private Sub ucrPnl_ControlValueChanged(ucrChangedControl As ucrCore) Handles ucrPnlOverallOptions.ControlValueChanged
         If rdoCopyfromColumn.Checked Then
-            ucrNewColumnNameforRownamesOrNumbers.Visible = False
-            ucrSelectorByDataFrameAddRemoveforRownamesOrNumbers.Enabled = True
-            ucrReceiverSingleRownamesOrNumbers.Enabled = True
-            ucrBaseRownamesorNumbers.clsRsyntax.SetFunction(frmMain.clsRLink.strInstatDataObject & "$set_row_names")
-            ucrBaseRownamesorNumbers.clsRsyntax.AddParameter("data_name", Chr(34) & ucrSelectorByDataFrameAddRemoveforRownamesOrNumbers.strCurrentDataFrame & Chr(34))
-
-            'set parameters
-
-        ElseIf rdoCopytoFirstColumn.Checked Then
-
-            ucrNewColumnNameforRownamesOrNumbers.Visible = False
-            ucrBaseRownamesorNumbers.clsRsyntax.SetFunction(frmMain.clsRLink.strInstatDataObject & "$set_row_names")
-            'ucrBaseRownamesorNumbers.clsRsyntax.SetAssignTo("rownamesfromtextbox_temp", ucrSelectorByDataFrameAddRemoveforRownamesOrNumbers.strCurrentDataFrame, "rownamesfromtextbox")
-            ucrBaseRownamesorNumbers.clsRsyntax.AddParameter("row_names", clsRFunctionParameter:=ucrReceiverSingleRownamesOrNumbers.GetVariables())
-            ucrBaseRownamesorNumbers.clsRsyntax.ClearParameters()
-            'set prefix parameter
-
-        ElseIf rdoCopytoColumnsforRownamesOrNumbers.Checked Then
-
-            ucrNewColumnNameforRownamesOrNumbers.Visible = True
-            ucrBaseRownamesorNumbers.clsRsyntax.SetFunction(frmMain.clsRLink.strInstatDataObject & "$set_row_names")
-            ucrBaseRownamesorNumbers.clsRsyntax.AddParameter("data_name", Chr(34) & ucrSelectorByDataFrameAddRemoveforRownamesOrNumbers.strCurrentDataFrame & Chr(34))
-            ucrBaseRownamesorNumbers.clsRsyntax.SetAssignTo("rownamesfromtextbox_temp", ucrSelectorByDataFrameAddRemoveforRownamesOrNumbers.strCurrentDataFrame, "rownamesfromtextbox")
-            ucrBaseRownamesorNumbers.clsRsyntax.SetAssignTo(strAssignToName:=ucrNewColumnNameforRownamesOrNumbers.strCurrNewColumnText, strTempDataframe:=ucrSelectorByDataFrameAddRemoveforRownamesOrNumbers.strCurrentDataFrame, strTempColumn:=ucrNewColumnNameforRownamesOrNumbers.strCurrNewColumnText)
-            ucrBaseRownamesorNumbers.clsRsyntax.AddParameter("row_names", clsRFunctionParameter:=ucrReceiverSingleRownamesOrNumbers.GetVariables())
-
-        ElseIf rdoResetintoPositiveIntegers.Checked Then
-            ucrBaseRownamesorNumbers.clsRsyntax.SetFunction(frmMain.clsRLink.strInstatDataObject & "$set_row_names")
-            ucrBaseRownamesorNumbers.clsRsyntax.AddParameter("data_name", Chr(34) & ucrSelectorByDataFrameAddRemoveforRownamesOrNumbers.strCurrentDataFrame & Chr(34))
-            'set parameters 
-
-        ElseIf rdoSortbyRowNamesorNumbers.Checked Then
-
-            ucrNewColumnNameforRownamesOrNumbers.Visible = False
-            ucrBaseRownamesorNumbers.clsRsyntax.SetFunction(frmMain.clsRLink.strInstatDataObject & "$set_row_names")
-            ucrBaseRownamesorNumbers.clsRsyntax.AddParameter(frmMain.clsRLink.strInstatDataObject & "$sort_dataframe")
-            chkDecreasingforRownamesOrNumbers.Visible = True
-
+            ucrBase.clsRsyntax.SetFunction(frmMain.clsRLink.strInstatDataObject & "$set_row_names")
+            ucrSelectorRowNames.SetVariablesVisible(True)
         Else
-
-            ucrReceiverSingleRownamesOrNumbers.Enabled = False
-            ucrSelectorByDataFrameAddRemoveforRownamesOrNumbers.Enabled = False
-
-
+            ucrSelectorRowNames.SetVariablesVisible(False)
+            If rdoCopytoFirstColumn.Checked Then
+                ucrBase.clsRsyntax.SetFunction(frmMain.clsRLink.strInstatDataObject & "$get_row_names")
+            ElseIf rdoResetintoPositiveIntegers.Checked Then
+                ucrBase.clsRsyntax.SetFunction(frmMain.clsRLink.strInstatDataObject & "$set_row_names")
+            ElseIf rdoSortbyRowNames.Checked Then
+                ucrBase.clsRsyntax.SetFunction(frmMain.clsRLink.strInstatDataObject & "$sort_dataframe")
+            End If
         End If
-
-
     End Sub
 
-    Private Sub chkDecreasingforRownamesOrNumbers_CheckedChanged(sender As Object, e As EventArgs) Handles chkDecreasingforRownamesOrNumbers.CheckedChanged
-
-        If chkDecreasingforRownamesOrNumbers.Checked Then
-            ucrBaseRownamesorNumbers.clsRsyntax.AddParameter("decreasing", "TRUE")
-        Else
-            ucrBaseRownamesorNumbers.clsRsyntax.AddParameter("decreasing", "FALSE")
-        End If
-
+    Public Sub SetRCodeForControls(bReset As Boolean)
+        SetRCode(Me, ucrBase.clsRsyntax.clsBaseFunction, bReset)
     End Sub
 
-    Private Sub ucrReceiverSingleRownamesOrNumbers_SelectionChanged(sender As Object, e As EventArgs) Handles ucrReceiverSingleRownamesOrNumbers.SelectionChanged
-        ucrBaseRownamesorNumbers.clsRsyntax.AddParameter("row_names", clsRFunctionParameter:=ucrReceiverSingleRownamesOrNumbers.GetVariables())
+    Private Sub ucrBase_ClickReset(sender As Object, e As EventArgs) Handles ucrBase.ClickReset
+        SetDefaults()
+        SetRCodeForControls(True)
+        TestOKEnabled()
+    End Sub
 
+    Private Sub CoreControls_ControlContentsChanged(ucrChangedControl As ucrCore) Handles ucrSelectorRowNames.ControlContentsChanged
+        TestOKEnabled()
     End Sub
 End Class

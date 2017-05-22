@@ -17,7 +17,7 @@
 Public Class Geoms
     Public strGeomName As String = ""
     Public clsAesParameters As New List(Of AesParameters)
-    Public clsLayerParameters As New List(Of LayerParameters)
+    Public clsLayerParameters As New List(Of LayerParameter)
 
     Public Sub SetGeomName(strTempName As String)
         strGeomName = strTempName
@@ -31,11 +31,12 @@ Public Class Geoms
         NewAesParameter.strIncludedDataTypes = strIncludedDataTypes
         NewAesParameter.strExcludedDataTypes = strExcludedDataTypes
         NewAesParameter.bIsMandatory = bIsMandatory
+        'NewAesParameter.bIsDependentlyMandatory = bIsDependentlyMandatory
         clsAesParameters.Add(NewAesParameter)
     End Sub
 
     Public Sub AddLayerParameter(strLayerParameterName As String, strLayerParameterDataType As String, strLayerParameterDefaultValue As String, Optional bIsDependent As Boolean = False, Optional lstParameterStrings As String() = Nothing, Optional strDependentParameter As String = "", Optional strDependantpParameterValue As String = "")
-        Dim NewLayerParameter As New LayerParameters
+        Dim NewLayerParameter As New LayerParameter
 
         If lstParameterStrings Is Nothing Then
             lstParameterStrings = New String() {}
@@ -71,9 +72,11 @@ Public Class AesParameters
     Public strExcludedDataTypes As String()
     Public strAesParameterValue As String
     Public bIsMandatory As Boolean
+    'Public bIsDependentlyMandatory As Boolean 'proposition for solving the situation in which one out of two aes need to be filled. For the moment not in use.
+    'Task: modify the mandatory method to have three cases: not mandatory, mandatory and partial mandatory (requires mapping to "" when not filled). Would enable to clean methods in sdgLayerOptions: ucrSdgLayerBase_ClickReturn; ucrGeomListWithAes: SetAes and dlg[SpecificGraphs]: cmd[SpecificGraph]Options_Click and SetX/YParameter.
 End Class
 
-Public Class LayerParameters
+Public Class LayerParameter
     'contains info about the layer parameters
     Public strLayerParameterName As String
     Public strLayerParameterDataType As String

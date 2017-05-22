@@ -32,16 +32,16 @@ Partial Class dlgReorderLevels
         'lblFactor
         '
         Me.lblFactor.AutoSize = True
-        Me.lblFactor.Location = New System.Drawing.Point(249, 19)
+        Me.lblFactor.Location = New System.Drawing.Point(258, 27)
         Me.lblFactor.Name = "lblFactor"
-        Me.lblFactor.Size = New System.Drawing.Size(37, 13)
-        Me.lblFactor.TabIndex = 4
-        Me.lblFactor.Tag = "Factor"
-        Me.lblFactor.Text = "Factor"
+        Me.lblFactor.Size = New System.Drawing.Size(85, 13)
+        Me.lblFactor.TabIndex = 1
+        Me.lblFactor.Tag = "Factor_Selected:"
+        Me.lblFactor.Text = "Factor Selected:"
         '
         'ucrReorderFactor
         '
-        Me.ucrReorderFactor.Location = New System.Drawing.Point(249, 60)
+        Me.ucrReorderFactor.Location = New System.Drawing.Point(255, 66)
         Me.ucrReorderFactor.Name = "ucrReorderFactor"
         Me.ucrReorderFactor.Size = New System.Drawing.Size(154, 139)
         Me.ucrReorderFactor.TabIndex = 3
@@ -50,37 +50,46 @@ Partial Class dlgReorderLevels
         '
         'ucrReceiverFactor
         '
-        Me.ucrReceiverFactor.Location = New System.Drawing.Point(249, 32)
+        Me.ucrReceiverFactor.frmParent = Me
+        Me.ucrReceiverFactor.Location = New System.Drawing.Point(259, 42)
+        Me.ucrReceiverFactor.Margin = New System.Windows.Forms.Padding(0)
         Me.ucrReceiverFactor.Name = "ucrReceiverFactor"
         Me.ucrReceiverFactor.Selector = Nothing
-        Me.ucrReceiverFactor.Size = New System.Drawing.Size(106, 26)
+        Me.ucrReceiverFactor.Size = New System.Drawing.Size(119, 26)
+        Me.ucrReceiverFactor.strNcFilePath = ""
         Me.ucrReceiverFactor.TabIndex = 2
+        Me.ucrReceiverFactor.ucrSelector = Nothing
         '
         'ucrSelectorFactorLevelsToReorder
         '
-        Me.ucrSelectorFactorLevelsToReorder.Location = New System.Drawing.Point(5, 6)
+        Me.ucrSelectorFactorLevelsToReorder.bShowHiddenColumns = False
+        Me.ucrSelectorFactorLevelsToReorder.bUseCurrentFilter = True
+        Me.ucrSelectorFactorLevelsToReorder.Location = New System.Drawing.Point(10, 10)
+        Me.ucrSelectorFactorLevelsToReorder.Margin = New System.Windows.Forms.Padding(0)
         Me.ucrSelectorFactorLevelsToReorder.Name = "ucrSelectorFactorLevelsToReorder"
-        Me.ucrSelectorFactorLevelsToReorder.Size = New System.Drawing.Size(242, 179)
-        Me.ucrSelectorFactorLevelsToReorder.TabIndex = 1
+        Me.ucrSelectorFactorLevelsToReorder.Size = New System.Drawing.Size(242, 193)
+        Me.ucrSelectorFactorLevelsToReorder.TabIndex = 0
         '
         'ucrBase
         '
         Me.ucrBase.Location = New System.Drawing.Point(13, 211)
         Me.ucrBase.Name = "ucrBase"
         Me.ucrBase.Size = New System.Drawing.Size(410, 53)
-        Me.ucrBase.TabIndex = 0
+        Me.ucrBase.TabIndex = 4
         '
         'dlgReorderLevels
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(432, 265)
+        Me.ClientSize = New System.Drawing.Size(421, 268)
         Me.Controls.Add(Me.lblFactor)
         Me.Controls.Add(Me.ucrReorderFactor)
         Me.Controls.Add(Me.ucrReceiverFactor)
         Me.Controls.Add(Me.ucrSelectorFactorLevelsToReorder)
         Me.Controls.Add(Me.ucrBase)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow
+        Me.MaximizeBox = False
+        Me.MinimizeBox = False
         Me.Name = "dlgReorderLevels"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Tag = "Reorder_Levels"

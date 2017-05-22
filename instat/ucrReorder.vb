@@ -14,6 +14,7 @@
 ' You should have received a copy of the GNU General Public License k
 ' along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+Imports instat
 Imports RDotNet
 Public Class ucrReorder
     Public Event OrderChanged()
@@ -23,6 +24,7 @@ Public Class ucrReorder
     Dim selectedListViewItem As ListViewItem
     Dim selectedIndex As Integer
     Dim itemsCount As Integer
+    Public bWithQuotes As Boolean = True
 
     Public Sub New()
 
@@ -172,7 +174,8 @@ Public Class ucrReorder
                     vecNames = frmMain.clsRLink.RunInternalScriptGetValue(frmMain.clsRLink.strInstatDataObject & "$get_column_names(data_name = " & Chr(34) & ucrDataFrameList.cboAvailableDataFrames.SelectedItem & Chr(34) & ")").AsCharacter
                 End If
             Case "factor"
-                If ucrReceiver IsNot Nothing AndAlso Not ucrReceiver.IsEmpty() AndAlso ucrReceiver.strCurrDataType = "factor" Then
+                'Using Contains means ordered factors will also be shown.
+                If ucrReceiver IsNot Nothing AndAlso Not ucrReceiver.IsEmpty() AndAlso ucrReceiver.strCurrDataType.Contains("factor") Then
                     vecNames = frmMain.clsRLink.RunInternalScriptGetValue(frmMain.clsRLink.strInstatDataObject & "$get_column_factor_levels(data_name = " & Chr(34) & ucrReceiver.GetDataName() & Chr(34) & ", col_name = " & ucrReceiver.GetVariableNames() & ")").AsCharacter
                 End If
             Case "data frame"
@@ -198,6 +201,20 @@ Public Class ucrReorder
                 lstAvailableData.Items.Add(vecNames(i))
             Next
             RaiseEvent OrderChanged()
+        Else
+            lstAvailableData.Items.Clear()
+        End If
+    End Sub
+
+    Private Sub FillListView(strItems As String())
+        If strItems IsNot Nothing Then
+            lstAvailableData.Items.Clear()
+            For i = 0 To strItems.Count - 1
+                lstAvailableData.Items.Add(strItems(i))
+            Next
+            RaiseEvent OrderChanged()
+        Else
+            lstAvailableData.Items.Clear()
         End If
     End Sub
 
@@ -220,5 +237,43 @@ Public Class ucrReorder
 
     Public Sub Reset()
         lstAvailableData.Items.Clear()
+    End Sub
+
+    Protected Overrides Sub SetControlValue()
+        Dim lstCurrentVariables As String()
+        Dim clsMainParameter As RParameter
+
+        clsMainParameter = GetParameter()
+        If clsMainParameter IsNot Nothing AndAlso clsMainParameter.bIsString AndAlso clsMainParameter.strArgumentValue IsNot Nothing Then
+            lstCurrentVariables = ExtractItemsFromRList(clsMainParameter.strArgumentValue)
+            SetToValue(lstCurrentVariables)
+        End If
+    End Sub
+
+    Protected Overrides Sub SetToValue(objTemp As Object)
+        Dim strTemp As String()
+        Dim chrTemp As CharacterVector
+
+        If TypeOf objTemp Is String() Then
+            strTemp = CType(objTemp, String())
+            FillListView(strTemp)
+        ElseIf TypeOf objTemp Is CharacterVector Then
+            chrTemp = CType(objTemp, CharacterVector)
+            FillListView(chrTemp)
+        Else
+            MsgBox("Developer error: Cannot set the value of " & Name & " because cannot convert value of object to String() or CharacterVector.")
+        End If
+    End Sub
+
+    Private Sub ucrReorder_OrderChanged() Handles Me.OrderChanged
+
+        OnControlValueChanged()
+    End Sub
+
+    Public Overrides Sub UpdateParameter(clsTempParam As RParameter)
+        If clsTempParam Is Nothing Then
+            clsTempParam = New RParameter
+        End If
+        clsTempParam.SetArgumentValue(GetVariableNames(bWithQuotes))
     End Sub
 End Class

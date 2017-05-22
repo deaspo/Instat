@@ -17,20 +17,45 @@
 Imports instat.Translations
 
 Public Class dlgStemAndLeaf
-    Public bFirstLoad As Boolean = True
+    Private bFirstLoad As Boolean = True
+    Private bReset As Boolean = True
+    Private clsStemAndLeaf As New RFunction
     Private Sub dlgStemAndLeaf_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         If bFirstLoad Then
             InitialiseDialog()
-            SetDefaults()
             bFirstLoad = False
         End If
+        If bReset Then
+            SetDefaults()
+        End If
+        SetRCodeForControls(bReset)
+        bReset = False
         autoTranslate(Me)
-        TestOkEnabled()
     End Sub
+
+    Private Sub InitialiseDialog()
+        ucrBase.clsRsyntax.iCallType = 2
+        ucrBase.iHelpTopicID = 326
+
+        'ucrReceiver
+        ucrReceiverStemAndLeaf.SetParameter(New RParameter("x", 0))
+        ucrReceiverStemAndLeaf.SetParameterIsRFunction()
+        ucrReceiverStemAndLeaf.Selector = ucrStemLeafSelector
+        ucrReceiverStemAndLeaf.SetIncludedDataTypes({"numeric"})
+    End Sub
+
     Private Sub SetDefaults()
+        clsStemAndLeaf = New RFunction
+
         ucrReceiverStemAndLeaf.SetMeAsReceiver()
-        TestOkEnabled()
+        clsStemAndLeaf.SetRCommand("stem")
+        ucrBase.clsRsyntax.SetBaseRFunction(clsStemAndLeaf)
     End Sub
+
+    Private Sub SetRCodeForControls(bReset As Boolean)
+        SetRCode(Me, ucrBase.clsRsyntax.clsBaseFunction, bReset)
+    End Sub
+
     Private Sub TestOkEnabled()
         If Not ucrReceiverStemAndLeaf.IsEmpty Then
             ucrBase.OKEnabled(True)
@@ -38,15 +63,14 @@ Public Class dlgStemAndLeaf
             ucrBase.OKEnabled(False)
         End If
     End Sub
-    Private Sub InitialiseDialog()
-        ucrBase.clsRsyntax.SetFunction("stem")
-        ucrBase.clsRsyntax.iCallType = 2
-        ucrReceiverStemAndLeaf.Selector = ucrStemLeafSelector
-        ucrReceiverStemAndLeaf.SetIncludedDataTypes({"numeric"})
-        ucrBase.iHelpTopicID = 326
+
+    Private Sub ucrBase_ClickReset(sender As Object, e As EventArgs) Handles ucrBase.ClickReset
+        SetDefaults()
+        SetRCodeForControls(True)
+        TestOkEnabled()
     End Sub
-    Private Sub ucrReceiverStemAndLeaf_SelectionChanged(sender As Object, e As EventArgs) Handles ucrReceiverStemAndLeaf.SelectionChanged
-        ucrBase.clsRsyntax.AddParameter("x", clsRFunctionParameter:=ucrReceiverStemAndLeaf.GetVariables())
+
+    Private Sub ucrReceiverStemAndLeaf_ControlContentsChanged(ucrChangedControl As ucrCore) Handles ucrReceiverStemAndLeaf.ControlContentsChanged
         TestOkEnabled()
     End Sub
 End Class

@@ -13,11 +13,13 @@
 '
 ' You should have received a copy of the GNU General Public License k
 ' along with this program.  If not, see <http://www.gnu.org/licenses/>.
+Imports instat
 Imports instat.Translations
 
 Public Class dlgRandomSample
     Public bFirstLoad As Boolean = True
     Private clsMultipleSamplesFunction As New RFunction
+    Public clsCurrentDistribution As New Distribution
     Private clsDistribtionFunction As New RFunction
     Private clsSetSeed As New RFunction
 
@@ -47,15 +49,20 @@ Public Class dlgRandomSample
         ucrNewColumnName.SetItemsTypeAsColumns()
         ucrNewColumnName.SetDefaultTypeAsColumn()
         ucrNewColumnName.SetDataFrameSelector(ucrSelectorRandomSamples)
+        ucrNewColumnName.SetValidationTypeAsRVariable()
+        ucrPrefixNewColumns.SetValidationTypeAsRVariable()
+        ucrSelectorRandomSamples.bUseCurrentFilter = False
     End Sub
 
     Private Sub SetDefaults()
+        ucrSelectorRandomSamples.Reset()
         ucrPrefixNewColumns.SetName("Rand")
-        SetDataFrameParameters()
+        SetDataFrameandDistributionParameters()
         nudNumberOfSamples.Value = 1
         SetNumberOfSamplesParameters()
         chkSetSeed.Checked = False
         nudSeed.Value = 1
+        ucrDistWithParameters.SetParameters()
         SetSeedParameters()
     End Sub
 
@@ -63,9 +70,8 @@ Public Class dlgRandomSample
         SetAssignTo()
     End Sub
 
-    Private Sub ucrDataFrameSelector_DataFrameChanged(sender As Object, e As EventArgs, strPrevDataFrame As String) Handles ucrSelectorRandomSamples.DataFrameChanged
-        SetDataFrameParameters()
-        TestOKEnabled()
+    Private Sub ucrBase_ClickReset(sender As Object, e As EventArgs) Handles ucrBase.ClickReset
+        SetDefaults()
     End Sub
 
     Private Sub SetSeedParameters()
@@ -82,8 +88,13 @@ Public Class dlgRandomSample
         End If
     End Sub
 
-    Private Sub SetDataFrameParameters()
-        clsDistribtionFunction.AddParameter("n", ucrSelectorRandomSamples.iDataFrameLength)
+    Private Sub SetDataFrameandDistributionParameters()
+        If ucrDistWithParameters.clsCurrDistribution.strRName = "hyper" Then
+            clsDistribtionFunction.AddParameter("nn", ucrSelectorRandomSamples.iDataFrameLength)
+        Else
+            clsDistribtionFunction.RemoveParameterByName("nn")
+            clsDistribtionFunction.AddParameter("n", ucrSelectorRandomSamples.iDataFrameLength)
+        End If
         SetAssignTo()
         TestOKEnabled()
     End Sub
@@ -167,6 +178,15 @@ Public Class dlgRandomSample
 
     Private Sub nudSeed_TextChanged(sender As Object, e As EventArgs) Handles nudSeed.TextChanged
         SetSeedParameters()
+        TestOKEnabled()
+    End Sub
+
+    Private Sub ucrDistWithParameters_cboDistributionsIndexChanged(sender As Object, e As EventArgs) Handles ucrDistWithParameters.cboDistributionsIndexChanged
+        SetDataFrameandDistributionParameters()
+    End Sub
+
+    Private Sub ucrSelectorRandomSamples_ControlValueChanged(ucrChangedControl As ucrCore) Handles ucrSelectorRandomSamples.ControlValueChanged
+        SetDataFrameandDistributionParameters()
         TestOKEnabled()
     End Sub
 End Class

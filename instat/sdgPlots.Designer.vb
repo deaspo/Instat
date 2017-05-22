@@ -23,231 +23,132 @@ Partial Class sdgPlots
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Me.tabctrlBoxSubdialog = New System.Windows.Forms.TabControl()
-        Me.tabTheme = New System.Windows.Forms.TabPage()
-        Me.tabLegend = New System.Windows.Forms.TabPage()
-        Me.grpLabels = New System.Windows.Forms.GroupBox()
-        Me.chkReorderLabels = New System.Windows.Forms.CheckBox()
-        Me.chkChangeLabels = New System.Windows.Forms.CheckBox()
-        Me.grpTitle = New System.Windows.Forms.GroupBox()
-        Me.txtChangeTitle = New System.Windows.Forms.TextBox()
-        Me.chkChangeTitle = New System.Windows.Forms.CheckBox()
-        Me.chkDisplayLegend = New System.Windows.Forms.CheckBox()
         Me.tabFacet = New System.Windows.Forms.TabPage()
+        Me.chkFreeSpace = New System.Windows.Forms.CheckBox()
+        Me.ucrFacetSelector = New instat.ucrSelectorByDataFrameAddRemove()
+        Me.chkNoOfRowsOrColumns = New System.Windows.Forms.CheckBox()
         Me.chkIncludeFacets = New System.Windows.Forms.CheckBox()
-        Me.txtNoOfRows = New System.Windows.Forms.TextBox()
         Me.chkFreeScalesY = New System.Windows.Forms.CheckBox()
         Me.chkMargin = New System.Windows.Forms.CheckBox()
         Me.chkFreeScalesX = New System.Windows.Forms.CheckBox()
-        Me.txtNoOfColumns = New System.Windows.Forms.TextBox()
-        Me.lblNoofRows = New System.Windows.Forms.Label()
-        Me.lblNoOfColumns = New System.Windows.Forms.Label()
-        Me.chkWrapOptions = New System.Windows.Forms.CheckBox()
         Me.rdoHorizontal = New System.Windows.Forms.RadioButton()
         Me.rdoVertical = New System.Windows.Forms.RadioButton()
         Me.lblFactor2 = New System.Windows.Forms.Label()
         Me.lblFactor1 = New System.Windows.Forms.Label()
         Me.ucr2ndFactorReceiver = New instat.ucrReceiverSingle()
         Me.ucr1stFactorReceiver = New instat.ucrReceiverSingle()
-        Me.ucrAddRemove = New instat.ucrSelectorAddRemove()
         Me.tabLayers = New System.Windows.Forms.TabPage()
-        Me.chkConnect = New System.Windows.Forms.CheckBox()
-        Me.chkDotPlot = New System.Windows.Forms.CheckBox()
+        Me.ucrPlotsAdditionalLayers = New instat.ucrAdditionalLayers()
+        Me.tabTitles = New System.Windows.Forms.TabPage()
+        Me.Label1 = New System.Windows.Forms.Label()
+        Me.ucrInputGraphTitle = New instat.ucrInputTextBox()
+        Me.grpLegendTitle = New System.Windows.Forms.GroupBox()
+        Me.ucrInputLegend = New instat.ucrInputTextBox()
+        Me.rdoLegendTitleCustom = New System.Windows.Forms.RadioButton()
+        Me.chkDisplayLegendTitle = New System.Windows.Forms.CheckBox()
+        Me.chkOverwriteLegendTitle = New System.Windows.Forms.CheckBox()
+        Me.rdoLegendTitleAuto = New System.Windows.Forms.RadioButton()
         Me.tbpXAxis = New System.Windows.Forms.TabPage()
-        Me.grpTich = New System.Windows.Forms.GroupBox()
-        Me.chkSpecificPoints = New System.Windows.Forms.CheckBox()
-        Me.txtSpecificPoints = New System.Windows.Forms.TextBox()
-        Me.txtIntervals = New System.Windows.Forms.TextBox()
-        Me.chkIntervals = New System.Windows.Forms.CheckBox()
-        Me.chkXDisplayMarkers = New System.Windows.Forms.CheckBox()
-        Me.grpScale = New System.Windows.Forms.GroupBox()
-        Me.txtUpperLimit = New System.Windows.Forms.TextBox()
-        Me.txtLowerLimit = New System.Windows.Forms.TextBox()
-        Me.chkUpperLimit = New System.Windows.Forms.CheckBox()
-        Me.chkLowerLimit = New System.Windows.Forms.CheckBox()
-        Me.grpXLabel = New System.Windows.Forms.GroupBox()
-        Me.cboChangeLabels = New System.Windows.Forms.ComboBox()
-        Me.chkChangeXLabels = New System.Windows.Forms.CheckBox()
-        Me.chkDisplayLabels = New System.Windows.Forms.CheckBox()
-        Me.grpXAxisTitle = New System.Windows.Forms.GroupBox()
-        Me.txtXTitle = New System.Windows.Forms.TextBox()
-        Me.chkXDisplayTitle = New System.Windows.Forms.CheckBox()
+        Me.ucrXAxis = New instat.ucrAxes()
         Me.tbpYAxis = New System.Windows.Forms.TabPage()
-        Me.grpYlabels = New System.Windows.Forms.GroupBox()
-        Me.cboYChangeLevel = New System.Windows.Forms.ComboBox()
-        Me.chkChangeYLabelschkDisplayYLabels = New System.Windows.Forms.CheckBox()
-        Me.chkDisplayYLabels = New System.Windows.Forms.CheckBox()
-        Me.grpYTitle = New System.Windows.Forms.GroupBox()
-        Me.txtYTitle = New System.Windows.Forms.TextBox()
-        Me.chkDisplayYTitle = New System.Windows.Forms.CheckBox()
-        Me.grpYTich = New System.Windows.Forms.GroupBox()
-        Me.chkYSpecificPoints = New System.Windows.Forms.CheckBox()
-        Me.txtYSpecificPoints = New System.Windows.Forms.TextBox()
-        Me.txtYIntervals = New System.Windows.Forms.TextBox()
-        Me.chkYIntervals = New System.Windows.Forms.CheckBox()
-        Me.chkDisplayMarkers = New System.Windows.Forms.CheckBox()
-        Me.grpYScale = New System.Windows.Forms.GroupBox()
-        Me.txtYUpperLimit = New System.Windows.Forms.TextBox()
-        Me.txtYLowerLimit = New System.Windows.Forms.TextBox()
-        Me.chkYUpperLimit = New System.Windows.Forms.CheckBox()
-        Me.chkYLowerLimit = New System.Windows.Forms.CheckBox()
+        Me.ucrYAxis = New instat.ucrAxes()
+        Me.tabTheme = New System.Windows.Forms.TabPage()
+        Me.GroupBox1 = New System.Windows.Forms.GroupBox()
+        Me.lblFont = New System.Windows.Forms.Label()
+        Me.cmdAllOptions = New System.Windows.Forms.Button()
+        Me.ucrInputThemes = New instat.ucrInputComboBox()
+        Me.lblTheme = New System.Windows.Forms.Label()
+        Me.tabCoordinates = New System.Windows.Forms.TabPage()
+        Me.lblWarning = New System.Windows.Forms.Label()
         Me.ucrBaseSubdialog = New instat.ucrButtonsSubdialogue()
+        Me.nudNumberofRows = New System.Windows.Forms.NumericUpDown()
         Me.tabctrlBoxSubdialog.SuspendLayout()
-        Me.tabLegend.SuspendLayout()
-        Me.grpLabels.SuspendLayout()
-        Me.grpTitle.SuspendLayout()
         Me.tabFacet.SuspendLayout()
         Me.tabLayers.SuspendLayout()
+        Me.tabTitles.SuspendLayout()
+        Me.grpLegendTitle.SuspendLayout()
         Me.tbpXAxis.SuspendLayout()
-        Me.grpTich.SuspendLayout()
-        Me.grpScale.SuspendLayout()
-        Me.grpXLabel.SuspendLayout()
-        Me.grpXAxisTitle.SuspendLayout()
         Me.tbpYAxis.SuspendLayout()
-        Me.grpYlabels.SuspendLayout()
-        Me.grpYTitle.SuspendLayout()
-        Me.grpYTich.SuspendLayout()
-        Me.grpYScale.SuspendLayout()
+        Me.tabTheme.SuspendLayout()
+        Me.tabCoordinates.SuspendLayout()
+        CType(Me.nudNumberofRows, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'tabctrlBoxSubdialog
         '
-        Me.tabctrlBoxSubdialog.Controls.Add(Me.tabTheme)
-        Me.tabctrlBoxSubdialog.Controls.Add(Me.tabLegend)
         Me.tabctrlBoxSubdialog.Controls.Add(Me.tabFacet)
         Me.tabctrlBoxSubdialog.Controls.Add(Me.tabLayers)
+        Me.tabctrlBoxSubdialog.Controls.Add(Me.tabTitles)
         Me.tabctrlBoxSubdialog.Controls.Add(Me.tbpXAxis)
         Me.tabctrlBoxSubdialog.Controls.Add(Me.tbpYAxis)
-        Me.tabctrlBoxSubdialog.Location = New System.Drawing.Point(1, -1)
+        Me.tabctrlBoxSubdialog.Controls.Add(Me.tabTheme)
+        Me.tabctrlBoxSubdialog.Controls.Add(Me.tabCoordinates)
+        Me.tabctrlBoxSubdialog.Location = New System.Drawing.Point(1, 3)
         Me.tabctrlBoxSubdialog.Name = "tabctrlBoxSubdialog"
         Me.tabctrlBoxSubdialog.SelectedIndex = 0
-        Me.tabctrlBoxSubdialog.Size = New System.Drawing.Size(371, 283)
+        Me.tabctrlBoxSubdialog.Size = New System.Drawing.Size(480, 308)
         Me.tabctrlBoxSubdialog.TabIndex = 0
-        '
-        'tabTheme
-        '
-        Me.tabTheme.Location = New System.Drawing.Point(4, 22)
-        Me.tabTheme.Name = "tabTheme"
-        Me.tabTheme.Padding = New System.Windows.Forms.Padding(3)
-        Me.tabTheme.Size = New System.Drawing.Size(363, 257)
-        Me.tabTheme.TabIndex = 1
-        Me.tabTheme.Tag = "Theme"
-        Me.tabTheme.Text = "Theme"
-        Me.tabTheme.UseVisualStyleBackColor = True
-        '
-        'tabLegend
-        '
-        Me.tabLegend.Controls.Add(Me.grpLabels)
-        Me.tabLegend.Controls.Add(Me.grpTitle)
-        Me.tabLegend.Controls.Add(Me.chkDisplayLegend)
-        Me.tabLegend.Location = New System.Drawing.Point(4, 22)
-        Me.tabLegend.Name = "tabLegend"
-        Me.tabLegend.Padding = New System.Windows.Forms.Padding(3)
-        Me.tabLegend.Size = New System.Drawing.Size(363, 257)
-        Me.tabLegend.TabIndex = 2
-        Me.tabLegend.Tag = "Legend"
-        Me.tabLegend.Text = "Legend"
-        Me.tabLegend.UseVisualStyleBackColor = True
-        '
-        'grpLabels
-        '
-        Me.grpLabels.Controls.Add(Me.chkReorderLabels)
-        Me.grpLabels.Controls.Add(Me.chkChangeLabels)
-        Me.grpLabels.Location = New System.Drawing.Point(7, 137)
-        Me.grpLabels.Name = "grpLabels"
-        Me.grpLabels.Size = New System.Drawing.Size(209, 100)
-        Me.grpLabels.TabIndex = 2
-        Me.grpLabels.TabStop = False
-        Me.grpLabels.Text = "Labels"
-        '
-        'chkReorderLabels
-        '
-        Me.chkReorderLabels.AutoSize = True
-        Me.chkReorderLabels.Location = New System.Drawing.Point(7, 43)
-        Me.chkReorderLabels.Name = "chkReorderLabels"
-        Me.chkReorderLabels.Size = New System.Drawing.Size(98, 17)
-        Me.chkReorderLabels.TabIndex = 0
-        Me.chkReorderLabels.Text = "Reorder Labels"
-        Me.chkReorderLabels.UseVisualStyleBackColor = True
-        '
-        'chkChangeLabels
-        '
-        Me.chkChangeLabels.AutoSize = True
-        Me.chkChangeLabels.Location = New System.Drawing.Point(7, 20)
-        Me.chkChangeLabels.Name = "chkChangeLabels"
-        Me.chkChangeLabels.Size = New System.Drawing.Size(97, 17)
-        Me.chkChangeLabels.TabIndex = 0
-        Me.chkChangeLabels.Text = "Change Labels"
-        Me.chkChangeLabels.UseVisualStyleBackColor = True
-        '
-        'grpTitle
-        '
-        Me.grpTitle.Controls.Add(Me.txtChangeTitle)
-        Me.grpTitle.Controls.Add(Me.chkChangeTitle)
-        Me.grpTitle.Location = New System.Drawing.Point(7, 29)
-        Me.grpTitle.Name = "grpTitle"
-        Me.grpTitle.Size = New System.Drawing.Size(209, 100)
-        Me.grpTitle.TabIndex = 1
-        Me.grpTitle.TabStop = False
-        Me.grpTitle.Text = "Title"
-        '
-        'txtChangeTitle
-        '
-        Me.txtChangeTitle.Location = New System.Drawing.Point(5, 42)
-        Me.txtChangeTitle.Name = "txtChangeTitle"
-        Me.txtChangeTitle.Size = New System.Drawing.Size(180, 20)
-        Me.txtChangeTitle.TabIndex = 1
-        '
-        'chkChangeTitle
-        '
-        Me.chkChangeTitle.AutoSize = True
-        Me.chkChangeTitle.Location = New System.Drawing.Point(6, 19)
-        Me.chkChangeTitle.Name = "chkChangeTitle"
-        Me.chkChangeTitle.Size = New System.Drawing.Size(86, 17)
-        Me.chkChangeTitle.TabIndex = 0
-        Me.chkChangeTitle.Text = "Change Title"
-        Me.chkChangeTitle.UseVisualStyleBackColor = True
-        '
-        'chkDisplayLegend
-        '
-        Me.chkDisplayLegend.AutoSize = True
-        Me.chkDisplayLegend.Location = New System.Drawing.Point(7, 6)
-        Me.chkDisplayLegend.Name = "chkDisplayLegend"
-        Me.chkDisplayLegend.Size = New System.Drawing.Size(99, 17)
-        Me.chkDisplayLegend.TabIndex = 0
-        Me.chkDisplayLegend.Text = "Display Legend"
-        Me.chkDisplayLegend.UseVisualStyleBackColor = True
         '
         'tabFacet
         '
+        Me.tabFacet.Controls.Add(Me.nudNumberofRows)
+        Me.tabFacet.Controls.Add(Me.chkFreeSpace)
+        Me.tabFacet.Controls.Add(Me.ucrFacetSelector)
+        Me.tabFacet.Controls.Add(Me.chkNoOfRowsOrColumns)
         Me.tabFacet.Controls.Add(Me.chkIncludeFacets)
-        Me.tabFacet.Controls.Add(Me.txtNoOfRows)
         Me.tabFacet.Controls.Add(Me.chkFreeScalesY)
         Me.tabFacet.Controls.Add(Me.chkMargin)
         Me.tabFacet.Controls.Add(Me.chkFreeScalesX)
-        Me.tabFacet.Controls.Add(Me.txtNoOfColumns)
-        Me.tabFacet.Controls.Add(Me.lblNoofRows)
-        Me.tabFacet.Controls.Add(Me.lblNoOfColumns)
-        Me.tabFacet.Controls.Add(Me.chkWrapOptions)
         Me.tabFacet.Controls.Add(Me.rdoHorizontal)
         Me.tabFacet.Controls.Add(Me.rdoVertical)
         Me.tabFacet.Controls.Add(Me.lblFactor2)
         Me.tabFacet.Controls.Add(Me.lblFactor1)
         Me.tabFacet.Controls.Add(Me.ucr2ndFactorReceiver)
         Me.tabFacet.Controls.Add(Me.ucr1stFactorReceiver)
-        Me.tabFacet.Controls.Add(Me.ucrAddRemove)
         Me.tabFacet.Location = New System.Drawing.Point(4, 22)
         Me.tabFacet.Name = "tabFacet"
         Me.tabFacet.Padding = New System.Windows.Forms.Padding(3)
-        Me.tabFacet.Size = New System.Drawing.Size(363, 257)
+        Me.tabFacet.Size = New System.Drawing.Size(472, 282)
         Me.tabFacet.TabIndex = 3
         Me.tabFacet.Tag = "Facet"
-        Me.tabFacet.Text = "Facet"
+        Me.tabFacet.Text = "Facets"
         Me.tabFacet.UseVisualStyleBackColor = True
+        '
+        'chkFreeSpace
+        '
+        Me.chkFreeSpace.AutoSize = True
+        Me.chkFreeSpace.Location = New System.Drawing.Point(273, 252)
+        Me.chkFreeSpace.Name = "chkFreeSpace"
+        Me.chkFreeSpace.Size = New System.Drawing.Size(81, 17)
+        Me.chkFreeSpace.TabIndex = 21
+        Me.chkFreeSpace.Tag = "Free_scales"
+        Me.chkFreeSpace.Text = "Free Space"
+        Me.chkFreeSpace.UseVisualStyleBackColor = True
+        '
+        'ucrFacetSelector
+        '
+        Me.ucrFacetSelector.bShowHiddenColumns = False
+        Me.ucrFacetSelector.bUseCurrentFilter = True
+        Me.ucrFacetSelector.Location = New System.Drawing.Point(8, 36)
+        Me.ucrFacetSelector.Margin = New System.Windows.Forms.Padding(0)
+        Me.ucrFacetSelector.Name = "ucrFacetSelector"
+        Me.ucrFacetSelector.Size = New System.Drawing.Size(210, 180)
+        Me.ucrFacetSelector.TabIndex = 20
+        '
+        'chkNoOfRowsOrColumns
+        '
+        Me.chkNoOfRowsOrColumns.AutoSize = True
+        Me.chkNoOfRowsOrColumns.Location = New System.Drawing.Point(7, 257)
+        Me.chkNoOfRowsOrColumns.Name = "chkNoOfRowsOrColumns"
+        Me.chkNoOfRowsOrColumns.Size = New System.Drawing.Size(133, 17)
+        Me.chkNoOfRowsOrColumns.TabIndex = 18
+        Me.chkNoOfRowsOrColumns.Text = "Fixed Number of Rows"
+        Me.chkNoOfRowsOrColumns.UseVisualStyleBackColor = True
         '
         'chkIncludeFacets
         '
         Me.chkIncludeFacets.AutoSize = True
-        Me.chkIncludeFacets.Location = New System.Drawing.Point(262, 119)
+        Me.chkIncludeFacets.Location = New System.Drawing.Point(8, 12)
         Me.chkIncludeFacets.Name = "chkIncludeFacets"
         Me.chkIncludeFacets.Size = New System.Drawing.Size(96, 17)
         Me.chkIncludeFacets.TabIndex = 16
@@ -255,28 +156,21 @@ Partial Class sdgPlots
         Me.chkIncludeFacets.Text = "Include Facets"
         Me.chkIncludeFacets.UseVisualStyleBackColor = True
         '
-        'txtNoOfRows
-        '
-        Me.txtNoOfRows.Location = New System.Drawing.Point(298, 195)
-        Me.txtNoOfRows.Name = "txtNoOfRows"
-        Me.txtNoOfRows.Size = New System.Drawing.Size(62, 20)
-        Me.txtNoOfRows.TabIndex = 15
-        '
         'chkFreeScalesY
         '
         Me.chkFreeScalesY.AutoSize = True
-        Me.chkFreeScalesY.Location = New System.Drawing.Point(10, 225)
+        Me.chkFreeScalesY.Location = New System.Drawing.Point(273, 229)
         Me.chkFreeScalesY.Name = "chkFreeScalesY"
-        Me.chkFreeScalesY.Size = New System.Drawing.Size(109, 17)
+        Me.chkFreeScalesY.Size = New System.Drawing.Size(114, 17)
         Me.chkFreeScalesY.TabIndex = 14
         Me.chkFreeScalesY.Tag = "Free_scales"
-        Me.chkFreeScalesY.Text = "Free scales y-axis"
+        Me.chkFreeScalesY.Text = "Free Scales Y-Axis"
         Me.chkFreeScalesY.UseVisualStyleBackColor = True
         '
         'chkMargin
         '
         Me.chkMargin.AutoSize = True
-        Me.chkMargin.Location = New System.Drawing.Point(10, 179)
+        Me.chkMargin.Location = New System.Drawing.Point(273, 183)
         Me.chkMargin.Name = "chkMargin"
         Me.chkMargin.Size = New System.Drawing.Size(63, 17)
         Me.chkMargin.TabIndex = 13
@@ -286,56 +180,18 @@ Partial Class sdgPlots
         'chkFreeScalesX
         '
         Me.chkFreeScalesX.AutoSize = True
-        Me.chkFreeScalesX.Location = New System.Drawing.Point(10, 202)
+        Me.chkFreeScalesX.Location = New System.Drawing.Point(273, 206)
         Me.chkFreeScalesX.Name = "chkFreeScalesX"
-        Me.chkFreeScalesX.Size = New System.Drawing.Size(109, 17)
+        Me.chkFreeScalesX.Size = New System.Drawing.Size(114, 17)
         Me.chkFreeScalesX.TabIndex = 12
         Me.chkFreeScalesX.Tag = "Free_scales"
-        Me.chkFreeScalesX.Text = "Free scales x-axis"
+        Me.chkFreeScalesX.Text = "Free Scales X-Axis"
         Me.chkFreeScalesX.UseVisualStyleBackColor = True
-        '
-        'txtNoOfColumns
-        '
-        Me.txtNoOfColumns.Location = New System.Drawing.Point(298, 167)
-        Me.txtNoOfColumns.Name = "txtNoOfColumns"
-        Me.txtNoOfColumns.Size = New System.Drawing.Size(62, 20)
-        Me.txtNoOfColumns.TabIndex = 11
-        '
-        'lblNoofRows
-        '
-        Me.lblNoofRows.AutoSize = True
-        Me.lblNoofRows.Location = New System.Drawing.Point(188, 195)
-        Me.lblNoofRows.Name = "lblNoofRows"
-        Me.lblNoofRows.Size = New System.Drawing.Size(86, 13)
-        Me.lblNoofRows.TabIndex = 10
-        Me.lblNoofRows.Tag = "Number_of_Rows"
-        Me.lblNoofRows.Text = "Number of Rows"
-        '
-        'lblNoOfColumns
-        '
-        Me.lblNoOfColumns.AutoSize = True
-        Me.lblNoOfColumns.Location = New System.Drawing.Point(188, 170)
-        Me.lblNoOfColumns.Name = "lblNoOfColumns"
-        Me.lblNoOfColumns.Size = New System.Drawing.Size(98, 13)
-        Me.lblNoOfColumns.TabIndex = 10
-        Me.lblNoOfColumns.Tag = "Number_of_columns"
-        Me.lblNoOfColumns.Text = "Number of columns"
-        '
-        'chkWrapOptions
-        '
-        Me.chkWrapOptions.AutoSize = True
-        Me.chkWrapOptions.Location = New System.Drawing.Point(191, 142)
-        Me.chkWrapOptions.Name = "chkWrapOptions"
-        Me.chkWrapOptions.Size = New System.Drawing.Size(89, 17)
-        Me.chkWrapOptions.TabIndex = 9
-        Me.chkWrapOptions.Tag = "Wrap_options"
-        Me.chkWrapOptions.Text = "Wrap options"
-        Me.chkWrapOptions.UseVisualStyleBackColor = True
         '
         'rdoHorizontal
         '
         Me.rdoHorizontal.AutoSize = True
-        Me.rdoHorizontal.Location = New System.Drawing.Point(100, 142)
+        Me.rdoHorizontal.Location = New System.Drawing.Point(8, 231)
         Me.rdoHorizontal.Name = "rdoHorizontal"
         Me.rdoHorizontal.Size = New System.Drawing.Size(72, 17)
         Me.rdoHorizontal.TabIndex = 7
@@ -347,7 +203,7 @@ Partial Class sdgPlots
         'rdoVertical
         '
         Me.rdoVertical.AutoSize = True
-        Me.rdoVertical.Location = New System.Drawing.Point(10, 142)
+        Me.rdoVertical.Location = New System.Drawing.Point(104, 231)
         Me.rdoVertical.Name = "rdoVertical"
         Me.rdoVertical.Size = New System.Drawing.Size(60, 17)
         Me.rdoVertical.TabIndex = 6
@@ -359,25 +215,25 @@ Partial Class sdgPlots
         'lblFactor2
         '
         Me.lblFactor2.AutoSize = True
-        Me.lblFactor2.Location = New System.Drawing.Point(255, 68)
+        Me.lblFactor2.Location = New System.Drawing.Point(274, 133)
         Me.lblFactor2.Name = "lblFactor2"
-        Me.lblFactor2.Size = New System.Drawing.Size(101, 13)
+        Me.lblFactor2.Size = New System.Drawing.Size(109, 13)
         Me.lblFactor2.TabIndex = 4
-        Me.lblFactor2.Text = "2nd factor (optional)"
+        Me.lblFactor2.Text = "2nd Factor (Optional):"
         '
         'lblFactor1
         '
         Me.lblFactor1.AutoSize = True
-        Me.lblFactor1.Location = New System.Drawing.Point(252, 16)
+        Me.lblFactor1.Location = New System.Drawing.Point(272, 78)
         Me.lblFactor1.Name = "lblFactor1"
-        Me.lblFactor1.Size = New System.Drawing.Size(51, 13)
+        Me.lblFactor1.Size = New System.Drawing.Size(57, 13)
         Me.lblFactor1.TabIndex = 3
         Me.lblFactor1.Tag = ""
-        Me.lblFactor1.Text = "1st factor"
+        Me.lblFactor1.Text = "1st Factor:"
         '
         'ucr2ndFactorReceiver
         '
-        Me.ucr2ndFactorReceiver.Location = New System.Drawing.Point(252, 88)
+        Me.ucr2ndFactorReceiver.Location = New System.Drawing.Point(273, 148)
         Me.ucr2ndFactorReceiver.Margin = New System.Windows.Forms.Padding(0)
         Me.ucr2ndFactorReceiver.Name = "ucr2ndFactorReceiver"
         Me.ucr2ndFactorReceiver.Selector = Nothing
@@ -386,481 +242,287 @@ Partial Class sdgPlots
         '
         'ucr1stFactorReceiver
         '
-        Me.ucr1stFactorReceiver.Location = New System.Drawing.Point(252, 35)
+        Me.ucr1stFactorReceiver.Location = New System.Drawing.Point(273, 93)
         Me.ucr1stFactorReceiver.Margin = New System.Windows.Forms.Padding(0)
         Me.ucr1stFactorReceiver.Name = "ucr1stFactorReceiver"
         Me.ucr1stFactorReceiver.Selector = Nothing
         Me.ucr1stFactorReceiver.Size = New System.Drawing.Size(106, 26)
         Me.ucr1stFactorReceiver.TabIndex = 1
         '
-        'ucrAddRemove
-        '
-        Me.ucrAddRemove.Location = New System.Drawing.Point(10, 10)
-        Me.ucrAddRemove.Margin = New System.Windows.Forms.Padding(0)
-        Me.ucrAddRemove.Name = "ucrAddRemove"
-        Me.ucrAddRemove.Size = New System.Drawing.Size(228, 127)
-        Me.ucrAddRemove.TabIndex = 0
-        '
         'tabLayers
         '
-        Me.tabLayers.Controls.Add(Me.chkConnect)
-        Me.tabLayers.Controls.Add(Me.chkDotPlot)
+        Me.tabLayers.Controls.Add(Me.ucrPlotsAdditionalLayers)
         Me.tabLayers.Location = New System.Drawing.Point(4, 22)
         Me.tabLayers.Name = "tabLayers"
         Me.tabLayers.Padding = New System.Windows.Forms.Padding(3)
-        Me.tabLayers.Size = New System.Drawing.Size(363, 257)
+        Me.tabLayers.Size = New System.Drawing.Size(472, 282)
         Me.tabLayers.TabIndex = 4
         Me.tabLayers.Tag = "Layers"
         Me.tabLayers.Text = "Layers"
         Me.tabLayers.UseVisualStyleBackColor = True
         '
-        'chkConnect
+        'ucrPlotsAdditionalLayers
         '
-        Me.chkConnect.AutoSize = True
-        Me.chkConnect.Location = New System.Drawing.Point(22, 84)
-        Me.chkConnect.Name = "chkConnect"
-        Me.chkConnect.Size = New System.Drawing.Size(66, 17)
-        Me.chkConnect.TabIndex = 1
-        Me.chkConnect.Tag = "Connect"
-        Me.chkConnect.Text = "Connect"
-        Me.chkConnect.UseVisualStyleBackColor = True
+        Me.ucrPlotsAdditionalLayers.Location = New System.Drawing.Point(7, 6)
+        Me.ucrPlotsAdditionalLayers.Name = "ucrPlotsAdditionalLayers"
+        Me.ucrPlotsAdditionalLayers.Size = New System.Drawing.Size(218, 191)
+        Me.ucrPlotsAdditionalLayers.TabIndex = 0
         '
-        'chkDotPlot
+        'tabTitles
         '
-        Me.chkDotPlot.AutoSize = True
-        Me.chkDotPlot.Location = New System.Drawing.Point(22, 35)
-        Me.chkDotPlot.Name = "chkDotPlot"
-        Me.chkDotPlot.Size = New System.Drawing.Size(63, 17)
-        Me.chkDotPlot.TabIndex = 0
-        Me.chkDotPlot.Tag = "Dot_plot"
-        Me.chkDotPlot.Text = "Dot plot"
-        Me.chkDotPlot.UseVisualStyleBackColor = True
+        Me.tabTitles.Controls.Add(Me.Label1)
+        Me.tabTitles.Controls.Add(Me.ucrInputGraphTitle)
+        Me.tabTitles.Controls.Add(Me.grpLegendTitle)
+        Me.tabTitles.Location = New System.Drawing.Point(4, 22)
+        Me.tabTitles.Name = "tabTitles"
+        Me.tabTitles.Padding = New System.Windows.Forms.Padding(3)
+        Me.tabTitles.Size = New System.Drawing.Size(472, 282)
+        Me.tabTitles.TabIndex = 2
+        Me.tabTitles.Tag = "Titles"
+        Me.tabTitles.Text = "Titles"
+        Me.tabTitles.UseVisualStyleBackColor = True
+        '
+        'Label1
+        '
+        Me.Label1.AutoSize = True
+        Me.Label1.Location = New System.Drawing.Point(7, 17)
+        Me.Label1.Name = "Label1"
+        Me.Label1.Size = New System.Drawing.Size(62, 13)
+        Me.Label1.TabIndex = 10
+        Me.Label1.Text = "Graph Title:"
+        '
+        'ucrInputGraphTitle
+        '
+        Me.ucrInputGraphTitle.IsReadOnly = False
+        Me.ucrInputGraphTitle.Location = New System.Drawing.Point(75, 14)
+        Me.ucrInputGraphTitle.Name = "ucrInputGraphTitle"
+        Me.ucrInputGraphTitle.Size = New System.Drawing.Size(166, 21)
+        Me.ucrInputGraphTitle.TabIndex = 9
+        '
+        'grpLegendTitle
+        '
+        Me.grpLegendTitle.Controls.Add(Me.ucrInputLegend)
+        Me.grpLegendTitle.Controls.Add(Me.rdoLegendTitleCustom)
+        Me.grpLegendTitle.Controls.Add(Me.chkDisplayLegendTitle)
+        Me.grpLegendTitle.Controls.Add(Me.chkOverwriteLegendTitle)
+        Me.grpLegendTitle.Controls.Add(Me.rdoLegendTitleAuto)
+        Me.grpLegendTitle.Location = New System.Drawing.Point(6, 57)
+        Me.grpLegendTitle.Name = "grpLegendTitle"
+        Me.grpLegendTitle.Size = New System.Drawing.Size(278, 105)
+        Me.grpLegendTitle.TabIndex = 8
+        Me.grpLegendTitle.TabStop = False
+        Me.grpLegendTitle.Text = "Legend Title"
+        '
+        'ucrInputLegend
+        '
+        Me.ucrInputLegend.IsReadOnly = False
+        Me.ucrInputLegend.Location = New System.Drawing.Point(104, 72)
+        Me.ucrInputLegend.Name = "ucrInputLegend"
+        Me.ucrInputLegend.Size = New System.Drawing.Size(166, 21)
+        Me.ucrInputLegend.TabIndex = 11
+        '
+        'rdoLegendTitleCustom
+        '
+        Me.rdoLegendTitleCustom.AutoSize = True
+        Me.rdoLegendTitleCustom.Location = New System.Drawing.Point(61, 23)
+        Me.rdoLegendTitleCustom.Name = "rdoLegendTitleCustom"
+        Me.rdoLegendTitleCustom.Size = New System.Drawing.Size(60, 17)
+        Me.rdoLegendTitleCustom.TabIndex = 10
+        Me.rdoLegendTitleCustom.TabStop = True
+        Me.rdoLegendTitleCustom.Text = "Custom"
+        Me.rdoLegendTitleCustom.UseVisualStyleBackColor = True
+        '
+        'chkDisplayLegendTitle
+        '
+        Me.chkDisplayLegendTitle.AutoSize = True
+        Me.chkDisplayLegendTitle.Location = New System.Drawing.Point(6, 51)
+        Me.chkDisplayLegendTitle.Name = "chkDisplayLegendTitle"
+        Me.chkDisplayLegendTitle.Size = New System.Drawing.Size(60, 17)
+        Me.chkDisplayLegendTitle.TabIndex = 7
+        Me.chkDisplayLegendTitle.Text = "Display"
+        Me.chkDisplayLegendTitle.UseVisualStyleBackColor = True
+        '
+        'chkOverwriteLegendTitle
+        '
+        Me.chkOverwriteLegendTitle.AutoSize = True
+        Me.chkOverwriteLegendTitle.Location = New System.Drawing.Point(6, 74)
+        Me.chkOverwriteLegendTitle.Name = "chkOverwriteLegendTitle"
+        Me.chkOverwriteLegendTitle.Size = New System.Drawing.Size(94, 17)
+        Me.chkOverwriteLegendTitle.TabIndex = 3
+        Me.chkOverwriteLegendTitle.Text = "Overwrite Title"
+        Me.chkOverwriteLegendTitle.UseVisualStyleBackColor = True
+        '
+        'rdoLegendTitleAuto
+        '
+        Me.rdoLegendTitleAuto.AutoSize = True
+        Me.rdoLegendTitleAuto.Location = New System.Drawing.Point(6, 23)
+        Me.rdoLegendTitleAuto.Name = "rdoLegendTitleAuto"
+        Me.rdoLegendTitleAuto.Size = New System.Drawing.Size(47, 17)
+        Me.rdoLegendTitleAuto.TabIndex = 9
+        Me.rdoLegendTitleAuto.TabStop = True
+        Me.rdoLegendTitleAuto.Text = "Auto"
+        Me.rdoLegendTitleAuto.UseVisualStyleBackColor = True
         '
         'tbpXAxis
         '
-        Me.tbpXAxis.Controls.Add(Me.grpTich)
-        Me.tbpXAxis.Controls.Add(Me.grpScale)
-        Me.tbpXAxis.Controls.Add(Me.grpXLabel)
-        Me.tbpXAxis.Controls.Add(Me.grpXAxisTitle)
+        Me.tbpXAxis.Controls.Add(Me.ucrXAxis)
         Me.tbpXAxis.Location = New System.Drawing.Point(4, 22)
         Me.tbpXAxis.Name = "tbpXAxis"
         Me.tbpXAxis.Padding = New System.Windows.Forms.Padding(3)
-        Me.tbpXAxis.Size = New System.Drawing.Size(363, 257)
+        Me.tbpXAxis.Size = New System.Drawing.Size(472, 282)
         Me.tbpXAxis.TabIndex = 5
         Me.tbpXAxis.Text = "X-Axis"
         Me.tbpXAxis.UseVisualStyleBackColor = True
         '
-        'grpTich
+        'ucrXAxis
         '
-        Me.grpTich.Controls.Add(Me.chkSpecificPoints)
-        Me.grpTich.Controls.Add(Me.txtSpecificPoints)
-        Me.grpTich.Controls.Add(Me.txtIntervals)
-        Me.grpTich.Controls.Add(Me.chkIntervals)
-        Me.grpTich.Controls.Add(Me.chkXDisplayMarkers)
-        Me.grpTich.Location = New System.Drawing.Point(180, 115)
-        Me.grpTich.Name = "grpTich"
-        Me.grpTich.Size = New System.Drawing.Size(164, 84)
-        Me.grpTich.TabIndex = 0
-        Me.grpTich.TabStop = False
-        Me.grpTich.Text = "Tick Markers "
-        '
-        'chkSpecificPoints
-        '
-        Me.chkSpecificPoints.AutoSize = True
-        Me.chkSpecificPoints.Location = New System.Drawing.Point(6, 61)
-        Me.chkSpecificPoints.Name = "chkSpecificPoints"
-        Me.chkSpecificPoints.Size = New System.Drawing.Size(96, 17)
-        Me.chkSpecificPoints.TabIndex = 0
-        Me.chkSpecificPoints.Text = "Specific Points"
-        Me.chkSpecificPoints.UseVisualStyleBackColor = True
-        '
-        'txtSpecificPoints
-        '
-        Me.txtSpecificPoints.Location = New System.Drawing.Point(112, 59)
-        Me.txtSpecificPoints.Name = "txtSpecificPoints"
-        Me.txtSpecificPoints.Size = New System.Drawing.Size(42, 20)
-        Me.txtSpecificPoints.TabIndex = 1
-        '
-        'txtIntervals
-        '
-        Me.txtIntervals.Location = New System.Drawing.Point(112, 37)
-        Me.txtIntervals.Name = "txtIntervals"
-        Me.txtIntervals.Size = New System.Drawing.Size(42, 20)
-        Me.txtIntervals.TabIndex = 1
-        '
-        'chkIntervals
-        '
-        Me.chkIntervals.AutoSize = True
-        Me.chkIntervals.Location = New System.Drawing.Point(6, 40)
-        Me.chkIntervals.Name = "chkIntervals"
-        Me.chkIntervals.Size = New System.Drawing.Size(66, 17)
-        Me.chkIntervals.TabIndex = 0
-        Me.chkIntervals.Text = "Intervals"
-        Me.chkIntervals.UseVisualStyleBackColor = True
-        '
-        'chkXDisplayMarkers
-        '
-        Me.chkXDisplayMarkers.AutoSize = True
-        Me.chkXDisplayMarkers.Location = New System.Drawing.Point(6, 17)
-        Me.chkXDisplayMarkers.Name = "chkXDisplayMarkers"
-        Me.chkXDisplayMarkers.Size = New System.Drawing.Size(125, 17)
-        Me.chkXDisplayMarkers.TabIndex = 0
-        Me.chkXDisplayMarkers.Text = "Display Tich Markers"
-        Me.chkXDisplayMarkers.UseVisualStyleBackColor = True
-        '
-        'grpScale
-        '
-        Me.grpScale.Controls.Add(Me.txtUpperLimit)
-        Me.grpScale.Controls.Add(Me.txtLowerLimit)
-        Me.grpScale.Controls.Add(Me.chkUpperLimit)
-        Me.grpScale.Controls.Add(Me.chkLowerLimit)
-        Me.grpScale.Location = New System.Drawing.Point(3, 115)
-        Me.grpScale.Name = "grpScale"
-        Me.grpScale.Size = New System.Drawing.Size(164, 84)
-        Me.grpScale.TabIndex = 0
-        Me.grpScale.TabStop = False
-        Me.grpScale.Text = "Scale"
-        '
-        'txtUpperLimit
-        '
-        Me.txtUpperLimit.Location = New System.Drawing.Point(115, 51)
-        Me.txtUpperLimit.Name = "txtUpperLimit"
-        Me.txtUpperLimit.Size = New System.Drawing.Size(42, 20)
-        Me.txtUpperLimit.TabIndex = 1
-        '
-        'txtLowerLimit
-        '
-        Me.txtLowerLimit.Location = New System.Drawing.Point(115, 17)
-        Me.txtLowerLimit.Name = "txtLowerLimit"
-        Me.txtLowerLimit.Size = New System.Drawing.Size(42, 20)
-        Me.txtLowerLimit.TabIndex = 1
-        '
-        'chkUpperLimit
-        '
-        Me.chkUpperLimit.AutoSize = True
-        Me.chkUpperLimit.Location = New System.Drawing.Point(7, 54)
-        Me.chkUpperLimit.Name = "chkUpperLimit"
-        Me.chkUpperLimit.Size = New System.Drawing.Size(79, 17)
-        Me.chkUpperLimit.TabIndex = 0
-        Me.chkUpperLimit.Text = "Upper Limit"
-        Me.chkUpperLimit.UseVisualStyleBackColor = True
-        '
-        'chkLowerLimit
-        '
-        Me.chkLowerLimit.AutoSize = True
-        Me.chkLowerLimit.Location = New System.Drawing.Point(7, 20)
-        Me.chkLowerLimit.Name = "chkLowerLimit"
-        Me.chkLowerLimit.Size = New System.Drawing.Size(79, 17)
-        Me.chkLowerLimit.TabIndex = 0
-        Me.chkLowerLimit.Text = "Lower Limit"
-        Me.chkLowerLimit.UseVisualStyleBackColor = True
-        '
-        'grpXLabel
-        '
-        Me.grpXLabel.Controls.Add(Me.cboChangeLabels)
-        Me.grpXLabel.Controls.Add(Me.chkChangeXLabels)
-        Me.grpXLabel.Controls.Add(Me.chkDisplayLabels)
-        Me.grpXLabel.Location = New System.Drawing.Point(173, 6)
-        Me.grpXLabel.Name = "grpXLabel"
-        Me.grpXLabel.Size = New System.Drawing.Size(171, 88)
-        Me.grpXLabel.TabIndex = 0
-        Me.grpXLabel.TabStop = False
-        Me.grpXLabel.Text = "Labels"
-        '
-        'cboChangeLabels
-        '
-        Me.cboChangeLabels.FormattingEnabled = True
-        Me.cboChangeLabels.Location = New System.Drawing.Point(24, 61)
-        Me.cboChangeLabels.Name = "cboChangeLabels"
-        Me.cboChangeLabels.Size = New System.Drawing.Size(121, 21)
-        Me.cboChangeLabels.TabIndex = 1
-        '
-        'chkChangeXLabels
-        '
-        Me.chkChangeXLabels.AutoSize = True
-        Me.chkChangeXLabels.Location = New System.Drawing.Point(7, 41)
-        Me.chkChangeXLabels.Name = "chkChangeXLabels"
-        Me.chkChangeXLabels.Size = New System.Drawing.Size(97, 17)
-        Me.chkChangeXLabels.TabIndex = 0
-        Me.chkChangeXLabels.Text = "Change Labels"
-        Me.chkChangeXLabels.UseVisualStyleBackColor = True
-        '
-        'chkDisplayLabels
-        '
-        Me.chkDisplayLabels.AutoSize = True
-        Me.chkDisplayLabels.Location = New System.Drawing.Point(7, 20)
-        Me.chkDisplayLabels.Name = "chkDisplayLabels"
-        Me.chkDisplayLabels.Size = New System.Drawing.Size(94, 17)
-        Me.chkDisplayLabels.TabIndex = 0
-        Me.chkDisplayLabels.Text = "Display Labels"
-        Me.chkDisplayLabels.UseVisualStyleBackColor = True
-        '
-        'grpXAxisTitle
-        '
-        Me.grpXAxisTitle.Controls.Add(Me.txtXTitle)
-        Me.grpXAxisTitle.Controls.Add(Me.chkXDisplayTitle)
-        Me.grpXAxisTitle.Location = New System.Drawing.Point(6, 3)
-        Me.grpXAxisTitle.Name = "grpXAxisTitle"
-        Me.grpXAxisTitle.Size = New System.Drawing.Size(161, 91)
-        Me.grpXAxisTitle.TabIndex = 0
-        Me.grpXAxisTitle.TabStop = False
-        Me.grpXAxisTitle.Text = "Title"
-        '
-        'txtXTitle
-        '
-        Me.txtXTitle.AcceptsReturn = True
-        Me.txtXTitle.Location = New System.Drawing.Point(4, 44)
-        Me.txtXTitle.Name = "txtXTitle"
-        Me.txtXTitle.Size = New System.Drawing.Size(116, 20)
-        Me.txtXTitle.TabIndex = 1
-        '
-        'chkXDisplayTitle
-        '
-        Me.chkXDisplayTitle.AutoSize = True
-        Me.chkXDisplayTitle.Location = New System.Drawing.Point(4, 20)
-        Me.chkXDisplayTitle.Name = "chkXDisplayTitle"
-        Me.chkXDisplayTitle.Size = New System.Drawing.Size(83, 17)
-        Me.chkXDisplayTitle.TabIndex = 0
-        Me.chkXDisplayTitle.Text = "Display Title"
-        Me.chkXDisplayTitle.UseVisualStyleBackColor = True
+        Me.ucrXAxis.Location = New System.Drawing.Point(0, 1)
+        Me.ucrXAxis.Name = "ucrXAxis"
+        Me.ucrXAxis.Size = New System.Drawing.Size(470, 300)
+        Me.ucrXAxis.TabIndex = 0
         '
         'tbpYAxis
         '
-        Me.tbpYAxis.Controls.Add(Me.grpYlabels)
-        Me.tbpYAxis.Controls.Add(Me.grpYTitle)
-        Me.tbpYAxis.Controls.Add(Me.grpYTich)
-        Me.tbpYAxis.Controls.Add(Me.grpYScale)
+        Me.tbpYAxis.Controls.Add(Me.ucrYAxis)
         Me.tbpYAxis.Location = New System.Drawing.Point(4, 22)
         Me.tbpYAxis.Name = "tbpYAxis"
         Me.tbpYAxis.Padding = New System.Windows.Forms.Padding(3)
-        Me.tbpYAxis.Size = New System.Drawing.Size(363, 257)
+        Me.tbpYAxis.Size = New System.Drawing.Size(472, 282)
         Me.tbpYAxis.TabIndex = 6
         Me.tbpYAxis.Text = "Y-Axis"
         Me.tbpYAxis.UseVisualStyleBackColor = True
         '
-        'grpYlabels
+        'ucrYAxis
         '
-        Me.grpYlabels.Controls.Add(Me.cboYChangeLevel)
-        Me.grpYlabels.Controls.Add(Me.chkChangeYLabelschkDisplayYLabels)
-        Me.grpYlabels.Controls.Add(Me.chkDisplayYLabels)
-        Me.grpYlabels.Location = New System.Drawing.Point(175, 16)
-        Me.grpYlabels.Name = "grpYlabels"
-        Me.grpYlabels.Size = New System.Drawing.Size(171, 88)
-        Me.grpYlabels.TabIndex = 1
-        Me.grpYlabels.TabStop = False
-        Me.grpYlabels.Text = "Labels"
+        Me.ucrYAxis.Location = New System.Drawing.Point(0, 1)
+        Me.ucrYAxis.Name = "ucrYAxis"
+        Me.ucrYAxis.Size = New System.Drawing.Size(470, 300)
+        Me.ucrYAxis.TabIndex = 0
         '
-        'cboYChangeLevel
+        'tabTheme
         '
-        Me.cboYChangeLevel.FormattingEnabled = True
-        Me.cboYChangeLevel.Location = New System.Drawing.Point(24, 61)
-        Me.cboYChangeLevel.Name = "cboYChangeLevel"
-        Me.cboYChangeLevel.Size = New System.Drawing.Size(121, 21)
-        Me.cboYChangeLevel.TabIndex = 1
+        Me.tabTheme.Controls.Add(Me.GroupBox1)
+        Me.tabTheme.Controls.Add(Me.lblFont)
+        Me.tabTheme.Controls.Add(Me.cmdAllOptions)
+        Me.tabTheme.Controls.Add(Me.ucrInputThemes)
+        Me.tabTheme.Controls.Add(Me.lblTheme)
+        Me.tabTheme.Location = New System.Drawing.Point(4, 22)
+        Me.tabTheme.Name = "tabTheme"
+        Me.tabTheme.Padding = New System.Windows.Forms.Padding(3)
+        Me.tabTheme.Size = New System.Drawing.Size(472, 282)
+        Me.tabTheme.TabIndex = 1
+        Me.tabTheme.Tag = "Theme"
+        Me.tabTheme.Text = "Theme"
+        Me.tabTheme.UseVisualStyleBackColor = True
         '
-        'chkChangeYLabelschkDisplayYLabels
+        'GroupBox1
         '
-        Me.chkChangeYLabelschkDisplayYLabels.AutoSize = True
-        Me.chkChangeYLabelschkDisplayYLabels.Location = New System.Drawing.Point(7, 41)
-        Me.chkChangeYLabelschkDisplayYLabels.Name = "chkChangeYLabelschkDisplayYLabels"
-        Me.chkChangeYLabelschkDisplayYLabels.Size = New System.Drawing.Size(97, 17)
-        Me.chkChangeYLabelschkDisplayYLabels.TabIndex = 0
-        Me.chkChangeYLabelschkDisplayYLabels.Text = "Change Labels"
-        Me.chkChangeYLabelschkDisplayYLabels.UseVisualStyleBackColor = True
+        Me.GroupBox1.Location = New System.Drawing.Point(8, 65)
+        Me.GroupBox1.Name = "GroupBox1"
+        Me.GroupBox1.Size = New System.Drawing.Size(455, 223)
+        Me.GroupBox1.TabIndex = 5
+        Me.GroupBox1.TabStop = False
+        Me.GroupBox1.Text = "Common Options"
         '
-        'chkDisplayYLabels
+        'lblFont
         '
-        Me.chkDisplayYLabels.AutoSize = True
-        Me.chkDisplayYLabels.Location = New System.Drawing.Point(7, 20)
-        Me.chkDisplayYLabels.Name = "chkDisplayYLabels"
-        Me.chkDisplayYLabels.Size = New System.Drawing.Size(94, 17)
-        Me.chkDisplayYLabels.TabIndex = 0
-        Me.chkDisplayYLabels.Text = "Display Labels"
-        Me.chkDisplayYLabels.UseVisualStyleBackColor = True
+        Me.lblFont.AutoSize = True
+        Me.lblFont.Location = New System.Drawing.Point(233, 49)
+        Me.lblFont.Name = "lblFont"
+        Me.lblFont.Size = New System.Drawing.Size(0, 13)
+        Me.lblFont.TabIndex = 4
         '
-        'grpYTitle
+        'cmdAllOptions
         '
-        Me.grpYTitle.Controls.Add(Me.txtYTitle)
-        Me.grpYTitle.Controls.Add(Me.chkDisplayYTitle)
-        Me.grpYTitle.Location = New System.Drawing.Point(8, 13)
-        Me.grpYTitle.Name = "grpYTitle"
-        Me.grpYTitle.Size = New System.Drawing.Size(161, 91)
-        Me.grpYTitle.TabIndex = 2
-        Me.grpYTitle.TabStop = False
-        Me.grpYTitle.Text = "Title"
+        Me.cmdAllOptions.Location = New System.Drawing.Point(275, 18)
+        Me.cmdAllOptions.Name = "cmdAllOptions"
+        Me.cmdAllOptions.Size = New System.Drawing.Size(78, 23)
+        Me.cmdAllOptions.TabIndex = 2
+        Me.cmdAllOptions.Text = "All Options"
+        Me.cmdAllOptions.UseVisualStyleBackColor = True
         '
-        'txtYTitle
+        'ucrInputThemes
         '
-        Me.txtYTitle.AcceptsReturn = True
-        Me.txtYTitle.Location = New System.Drawing.Point(54, 40)
-        Me.txtYTitle.Name = "txtYTitle"
-        Me.txtYTitle.Size = New System.Drawing.Size(100, 20)
-        Me.txtYTitle.TabIndex = 1
+        Me.ucrInputThemes.IsReadOnly = False
+        Me.ucrInputThemes.Location = New System.Drawing.Point(87, 19)
+        Me.ucrInputThemes.Name = "ucrInputThemes"
+        Me.ucrInputThemes.Size = New System.Drawing.Size(171, 21)
+        Me.ucrInputThemes.TabIndex = 1
         '
-        'chkDisplayYTitle
+        'lblTheme
         '
-        Me.chkDisplayYTitle.AutoSize = True
-        Me.chkDisplayYTitle.Location = New System.Drawing.Point(4, 20)
-        Me.chkDisplayYTitle.Name = "chkDisplayYTitle"
-        Me.chkDisplayYTitle.Size = New System.Drawing.Size(83, 17)
-        Me.chkDisplayYTitle.TabIndex = 0
-        Me.chkDisplayYTitle.Text = "Display Title"
-        Me.chkDisplayYTitle.UseVisualStyleBackColor = True
+        Me.lblTheme.AutoSize = True
+        Me.lblTheme.Location = New System.Drawing.Point(8, 22)
+        Me.lblTheme.Name = "lblTheme"
+        Me.lblTheme.Size = New System.Drawing.Size(73, 13)
+        Me.lblTheme.TabIndex = 0
+        Me.lblTheme.Text = "Select Theme"
         '
-        'grpYTich
+        'tabCoordinates
         '
-        Me.grpYTich.Controls.Add(Me.chkYSpecificPoints)
-        Me.grpYTich.Controls.Add(Me.txtYSpecificPoints)
-        Me.grpYTich.Controls.Add(Me.txtYIntervals)
-        Me.grpYTich.Controls.Add(Me.chkYIntervals)
-        Me.grpYTich.Controls.Add(Me.chkDisplayMarkers)
-        Me.grpYTich.Location = New System.Drawing.Point(182, 125)
-        Me.grpYTich.Name = "grpYTich"
-        Me.grpYTich.Size = New System.Drawing.Size(164, 84)
-        Me.grpYTich.TabIndex = 3
-        Me.grpYTich.TabStop = False
-        Me.grpYTich.Text = "Tick Markers "
+        Me.tabCoordinates.Controls.Add(Me.lblWarning)
+        Me.tabCoordinates.Location = New System.Drawing.Point(4, 22)
+        Me.tabCoordinates.Name = "tabCoordinates"
+        Me.tabCoordinates.Padding = New System.Windows.Forms.Padding(3)
+        Me.tabCoordinates.Size = New System.Drawing.Size(472, 282)
+        Me.tabCoordinates.TabIndex = 7
+        Me.tabCoordinates.Text = "Coordinates"
+        Me.tabCoordinates.UseVisualStyleBackColor = True
         '
-        'chkYSpecificPoints
+        'lblWarning
         '
-        Me.chkYSpecificPoints.AutoSize = True
-        Me.chkYSpecificPoints.Location = New System.Drawing.Point(6, 61)
-        Me.chkYSpecificPoints.Name = "chkYSpecificPoints"
-        Me.chkYSpecificPoints.Size = New System.Drawing.Size(96, 17)
-        Me.chkYSpecificPoints.TabIndex = 0
-        Me.chkYSpecificPoints.Text = "Specific Points"
-        Me.chkYSpecificPoints.UseVisualStyleBackColor = True
-        '
-        'txtYSpecificPoints
-        '
-        Me.txtYSpecificPoints.Location = New System.Drawing.Point(112, 59)
-        Me.txtYSpecificPoints.Name = "txtYSpecificPoints"
-        Me.txtYSpecificPoints.Size = New System.Drawing.Size(42, 20)
-        Me.txtYSpecificPoints.TabIndex = 1
-        '
-        'txtYIntervals
-        '
-        Me.txtYIntervals.Location = New System.Drawing.Point(112, 37)
-        Me.txtYIntervals.Name = "txtYIntervals"
-        Me.txtYIntervals.Size = New System.Drawing.Size(42, 20)
-        Me.txtYIntervals.TabIndex = 1
-        '
-        'chkYIntervals
-        '
-        Me.chkYIntervals.AutoSize = True
-        Me.chkYIntervals.Location = New System.Drawing.Point(6, 40)
-        Me.chkYIntervals.Name = "chkYIntervals"
-        Me.chkYIntervals.Size = New System.Drawing.Size(66, 17)
-        Me.chkYIntervals.TabIndex = 0
-        Me.chkYIntervals.Text = "Intervals"
-        Me.chkYIntervals.UseVisualStyleBackColor = True
-        '
-        'chkDisplayMarkers
-        '
-        Me.chkDisplayMarkers.AutoSize = True
-        Me.chkDisplayMarkers.Location = New System.Drawing.Point(6, 17)
-        Me.chkDisplayMarkers.Name = "chkDisplayMarkers"
-        Me.chkDisplayMarkers.Size = New System.Drawing.Size(125, 17)
-        Me.chkDisplayMarkers.TabIndex = 0
-        Me.chkDisplayMarkers.Text = "Display Tich Markers"
-        Me.chkDisplayMarkers.UseVisualStyleBackColor = True
-        '
-        'grpYScale
-        '
-        Me.grpYScale.Controls.Add(Me.txtYUpperLimit)
-        Me.grpYScale.Controls.Add(Me.txtYLowerLimit)
-        Me.grpYScale.Controls.Add(Me.chkYUpperLimit)
-        Me.grpYScale.Controls.Add(Me.chkYLowerLimit)
-        Me.grpYScale.Location = New System.Drawing.Point(5, 125)
-        Me.grpYScale.Name = "grpYScale"
-        Me.grpYScale.Size = New System.Drawing.Size(164, 84)
-        Me.grpYScale.TabIndex = 4
-        Me.grpYScale.TabStop = False
-        Me.grpYScale.Text = "Scale"
-        '
-        'txtYUpperLimit
-        '
-        Me.txtYUpperLimit.Location = New System.Drawing.Point(115, 51)
-        Me.txtYUpperLimit.Name = "txtYUpperLimit"
-        Me.txtYUpperLimit.Size = New System.Drawing.Size(42, 20)
-        Me.txtYUpperLimit.TabIndex = 1
-        '
-        'txtYLowerLimit
-        '
-        Me.txtYLowerLimit.Location = New System.Drawing.Point(115, 17)
-        Me.txtYLowerLimit.Name = "txtYLowerLimit"
-        Me.txtYLowerLimit.Size = New System.Drawing.Size(42, 20)
-        Me.txtYLowerLimit.TabIndex = 1
-        '
-        'chkYUpperLimit
-        '
-        Me.chkYUpperLimit.AutoSize = True
-        Me.chkYUpperLimit.Location = New System.Drawing.Point(7, 54)
-        Me.chkYUpperLimit.Name = "chkYUpperLimit"
-        Me.chkYUpperLimit.Size = New System.Drawing.Size(79, 17)
-        Me.chkYUpperLimit.TabIndex = 0
-        Me.chkYUpperLimit.Text = "Upper Limit"
-        Me.chkYUpperLimit.UseVisualStyleBackColor = True
-        '
-        'chkYLowerLimit
-        '
-        Me.chkYLowerLimit.AutoSize = True
-        Me.chkYLowerLimit.Location = New System.Drawing.Point(7, 20)
-        Me.chkYLowerLimit.Name = "chkYLowerLimit"
-        Me.chkYLowerLimit.Size = New System.Drawing.Size(79, 17)
-        Me.chkYLowerLimit.TabIndex = 0
-        Me.chkYLowerLimit.Text = "Lower Limit"
-        Me.chkYLowerLimit.UseVisualStyleBackColor = True
+        Me.lblWarning.AutoSize = True
+        Me.lblWarning.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblWarning.Location = New System.Drawing.Point(99, 93)
+        Me.lblWarning.Name = "lblWarning"
+        Me.lblWarning.Size = New System.Drawing.Size(213, 20)
+        Me.lblWarning.TabIndex = 0
+        Me.lblWarning.Text = "This is yet to be implemented"
         '
         'ucrBaseSubdialog
         '
-        Me.ucrBaseSubdialog.Location = New System.Drawing.Point(83, 288)
+        Me.ucrBaseSubdialog.Location = New System.Drawing.Point(170, 317)
         Me.ucrBaseSubdialog.Name = "ucrBaseSubdialog"
         Me.ucrBaseSubdialog.Size = New System.Drawing.Size(160, 41)
         Me.ucrBaseSubdialog.TabIndex = 1
+        '
+        'nudNumberofRows
+        '
+        Me.nudNumberofRows.Location = New System.Drawing.Point(146, 254)
+        Me.nudNumberofRows.Name = "nudNumberofRows"
+        Me.nudNumberofRows.Size = New System.Drawing.Size(51, 20)
+        Me.nudNumberofRows.TabIndex = 23
         '
         'sdgPlots
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(384, 318)
+        Me.ClientSize = New System.Drawing.Size(479, 350)
         Me.Controls.Add(Me.ucrBaseSubdialog)
         Me.Controls.Add(Me.tabctrlBoxSubdialog)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow
+        Me.MaximizeBox = False
+        Me.MinimizeBox = False
         Me.Name = "sdgPlots"
-        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
+        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Tag = "Plot_Options"
         Me.Text = "Plot Options"
         Me.TopMost = True
         Me.tabctrlBoxSubdialog.ResumeLayout(False)
-        Me.tabLegend.ResumeLayout(False)
-        Me.tabLegend.PerformLayout()
-        Me.grpLabels.ResumeLayout(False)
-        Me.grpLabels.PerformLayout()
-        Me.grpTitle.ResumeLayout(False)
-        Me.grpTitle.PerformLayout()
         Me.tabFacet.ResumeLayout(False)
         Me.tabFacet.PerformLayout()
         Me.tabLayers.ResumeLayout(False)
-        Me.tabLayers.PerformLayout()
+        Me.tabTitles.ResumeLayout(False)
+        Me.tabTitles.PerformLayout()
+        Me.grpLegendTitle.ResumeLayout(False)
+        Me.grpLegendTitle.PerformLayout()
         Me.tbpXAxis.ResumeLayout(False)
-        Me.grpTich.ResumeLayout(False)
-        Me.grpTich.PerformLayout()
-        Me.grpScale.ResumeLayout(False)
-        Me.grpScale.PerformLayout()
-        Me.grpXLabel.ResumeLayout(False)
-        Me.grpXLabel.PerformLayout()
-        Me.grpXAxisTitle.ResumeLayout(False)
-        Me.grpXAxisTitle.PerformLayout()
         Me.tbpYAxis.ResumeLayout(False)
-        Me.grpYlabels.ResumeLayout(False)
-        Me.grpYlabels.PerformLayout()
-        Me.grpYTitle.ResumeLayout(False)
-        Me.grpYTitle.PerformLayout()
-        Me.grpYTich.ResumeLayout(False)
-        Me.grpYTich.PerformLayout()
-        Me.grpYScale.ResumeLayout(False)
-        Me.grpYScale.PerformLayout()
+        Me.tabTheme.ResumeLayout(False)
+        Me.tabTheme.PerformLayout()
+        Me.tabCoordinates.ResumeLayout(False)
+        Me.tabCoordinates.PerformLayout()
+        CType(Me.nudNumberofRows, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
 
     End Sub
@@ -868,72 +530,43 @@ Partial Class sdgPlots
     Friend WithEvents tabctrlBoxSubdialog As TabControl
     Friend WithEvents tabTheme As TabPage
     Friend WithEvents ucrBaseSubdialog As ucrButtonsSubdialogue
-    Friend WithEvents tabLegend As TabPage
+    Friend WithEvents tabTitles As TabPage
     Friend WithEvents tabFacet As TabPage
     Friend WithEvents tabLayers As TabPage
     Friend WithEvents chkFreeScalesX As CheckBox
-    Friend WithEvents txtNoOfColumns As TextBox
-    Friend WithEvents lblNoOfColumns As Label
-    Friend WithEvents chkWrapOptions As CheckBox
     Friend WithEvents rdoHorizontal As RadioButton
     Friend WithEvents rdoVertical As RadioButton
     Friend WithEvents lblFactor2 As Label
     Friend WithEvents lblFactor1 As Label
     Friend WithEvents ucr2ndFactorReceiver As ucrReceiverSingle
     Friend WithEvents ucr1stFactorReceiver As ucrReceiverSingle
-    Friend WithEvents ucrAddRemove As ucrSelectorAddRemove
-    Friend WithEvents chkConnect As CheckBox
-    Friend WithEvents chkDotPlot As CheckBox
     Friend WithEvents chkMargin As CheckBox
     Friend WithEvents chkFreeScalesY As CheckBox
-    Friend WithEvents txtNoOfRows As TextBox
     Friend WithEvents chkIncludeFacets As CheckBox
-    Friend WithEvents lblNoofRows As Label
-    Friend WithEvents chkDisplayLegend As CheckBox
-    Friend WithEvents grpLabels As GroupBox
-    Friend WithEvents grpTitle As GroupBox
-    Friend WithEvents chkChangeTitle As CheckBox
-    Friend WithEvents chkReorderLabels As CheckBox
-    Friend WithEvents chkChangeLabels As CheckBox
-    Friend WithEvents txtChangeTitle As TextBox
     Friend WithEvents tbpXAxis As TabPage
     Friend WithEvents tbpYAxis As TabPage
-    Friend WithEvents grpScale As GroupBox
-    Friend WithEvents txtUpperLimit As TextBox
-    Friend WithEvents txtLowerLimit As TextBox
-    Friend WithEvents chkUpperLimit As CheckBox
-    Friend WithEvents chkLowerLimit As CheckBox
-    Friend WithEvents grpXAxisTitle As GroupBox
-    Friend WithEvents grpXLabel As GroupBox
-    Friend WithEvents txtXTitle As TextBox
-    Friend WithEvents chkXDisplayTitle As CheckBox
-    Friend WithEvents grpTich As GroupBox
-    Friend WithEvents cboChangeLabels As ComboBox
-    Friend WithEvents chkChangeXLabels As CheckBox
-    Friend WithEvents chkDisplayLabels As CheckBox
-    Friend WithEvents chkSpecificPoints As CheckBox
-    Friend WithEvents txtSpecificPoints As TextBox
-    Friend WithEvents txtIntervals As TextBox
-    Friend WithEvents chkIntervals As CheckBox
-    Friend WithEvents chkXDisplayMarkers As CheckBox
-    Friend WithEvents grpYlabels As GroupBox
-    Friend WithEvents cboYChangeLevel As ComboBox
-    Friend WithEvents chkChangeYLabelschkDisplayYLabels As CheckBox
-    Friend WithEvents chkDisplayYLabels As CheckBox
-    Friend WithEvents grpYTitle As GroupBox
-    Friend WithEvents txtYTitle As TextBox
-    Friend WithEvents chkDisplayYTitle As CheckBox
-    Friend WithEvents grpYTich As GroupBox
-    Friend WithEvents chkYSpecificPoints As CheckBox
-    Friend WithEvents txtYSpecificPoints As TextBox
-    Friend WithEvents txtYIntervals As TextBox
-    Friend WithEvents chkYIntervals As CheckBox
-    Friend WithEvents chkDisplayMarkers As CheckBox
-    Friend WithEvents grpYScale As GroupBox
-    Friend WithEvents txtYUpperLimit As TextBox
-    Friend WithEvents txtYLowerLimit As TextBox
-    Friend WithEvents chkYUpperLimit As CheckBox
-    Friend WithEvents chkYLowerLimit As CheckBox
+    Friend WithEvents chkNoOfRowsOrColumns As CheckBox
+    Friend WithEvents ucrInputThemes As ucrInputComboBox
+    Friend WithEvents lblTheme As Label
+    Friend WithEvents cmdAllOptions As Button
+    Friend WithEvents lblFont As Label
+    Friend WithEvents ucrPlotsAdditionalLayers As ucrAdditionalLayers
+    Friend WithEvents GroupBox1 As GroupBox
+    Friend WithEvents chkDisplayLegendTitle As CheckBox
+    Friend WithEvents chkOverwriteLegendTitle As CheckBox
+    Friend WithEvents ucrFacetSelector As ucrSelectorByDataFrameAddRemove
+    Friend WithEvents grpLegendTitle As GroupBox
+    Friend WithEvents rdoLegendTitleCustom As RadioButton
+    Friend WithEvents rdoLegendTitleAuto As RadioButton
+    Friend WithEvents Label1 As Label
+    Friend WithEvents ucrInputGraphTitle As ucrInputTextBox
+    Friend WithEvents ucrXAxis As ucrAxes
+    Friend WithEvents ucrYAxis As ucrAxes
+    Friend WithEvents ucrInputLegend As ucrInputTextBox
+    Friend WithEvents chkFreeSpace As CheckBox
+    Friend WithEvents tabCoordinates As TabPage
+    Friend WithEvents lblWarning As Label
+    Friend WithEvents nudNumberofRows As NumericUpDown
 End Class
 
 

@@ -30,37 +30,40 @@ Partial Class dlgStemAndLeaf
         '
         'ucrReceiverStemAndLeaf
         '
-        Me.ucrReceiverStemAndLeaf.Location = New System.Drawing.Point(274, 33)
+        Me.ucrReceiverStemAndLeaf.frmParent = Me
+        Me.ucrReceiverStemAndLeaf.Location = New System.Drawing.Point(258, 60)
         Me.ucrReceiverStemAndLeaf.Margin = New System.Windows.Forms.Padding(0)
         Me.ucrReceiverStemAndLeaf.Name = "ucrReceiverStemAndLeaf"
         Me.ucrReceiverStemAndLeaf.Selector = Nothing
         Me.ucrReceiverStemAndLeaf.Size = New System.Drawing.Size(106, 26)
-        Me.ucrReceiverStemAndLeaf.TabIndex = 1
+        Me.ucrReceiverStemAndLeaf.TabIndex = 2
         '
         'ucrBase
         '
         Me.ucrBase.Location = New System.Drawing.Point(10, 201)
         Me.ucrBase.Name = "ucrBase"
         Me.ucrBase.Size = New System.Drawing.Size(410, 52)
-        Me.ucrBase.TabIndex = 2
+        Me.ucrBase.TabIndex = 3
         '
         'lblSelectedVariable
         '
         Me.lblSelectedVariable.AutoSize = True
-        Me.lblSelectedVariable.Location = New System.Drawing.Point(271, 10)
+        Me.lblSelectedVariable.Location = New System.Drawing.Point(256, 45)
         Me.lblSelectedVariable.Name = "lblSelectedVariable"
-        Me.lblSelectedVariable.Size = New System.Drawing.Size(90, 13)
-        Me.lblSelectedVariable.TabIndex = 3
-        Me.lblSelectedVariable.Tag = "Selected_Variable"
-        Me.lblSelectedVariable.Text = "Selected Variable"
+        Me.lblSelectedVariable.Size = New System.Drawing.Size(93, 13)
+        Me.lblSelectedVariable.TabIndex = 1
+        Me.lblSelectedVariable.Tag = "Selected_Variable:"
+        Me.lblSelectedVariable.Text = "Selected Variable:"
         '
         'ucrStemLeafSelector
         '
+        Me.ucrStemLeafSelector.bShowHiddenColumns = False
+        Me.ucrStemLeafSelector.bUseCurrentFilter = True
         Me.ucrStemLeafSelector.Location = New System.Drawing.Point(10, 10)
         Me.ucrStemLeafSelector.Margin = New System.Windows.Forms.Padding(0)
         Me.ucrStemLeafSelector.Name = "ucrStemLeafSelector"
         Me.ucrStemLeafSelector.Size = New System.Drawing.Size(242, 188)
-        Me.ucrStemLeafSelector.TabIndex = 4
+        Me.ucrStemLeafSelector.TabIndex = 0
         '
         'dlgStemAndLeaf
         '
@@ -75,6 +78,7 @@ Partial Class dlgStemAndLeaf
         Me.MaximizeBox = False
         Me.MinimizeBox = False
         Me.Name = "dlgStemAndLeaf"
+        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Tag = "Stem_and_Leaf"
         Me.Text = "Stem and Leaf"
         Me.ResumeLayout(False)

@@ -13,7 +13,7 @@
 '
 Imports instat.Translations
 Public Class dlgRenameMetadata
-    Public bFirstLoad As Boolean = True
+    Private bFirstLoad As Boolean = True
     Private Sub dlgRenameMetadata_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         autoTranslate(Me)
         If bFirstLoad Then
@@ -38,6 +38,7 @@ Public Class dlgRenameMetadata
         ucrReceiverSelectedMetadata.Selector = ucrSelectorForDeleTeMetadata
         ucrReceiverSelectedMetadata.SetMeAsReceiver()
         ucrSelectorForDeleTeMetadata.SetItemType("metadata")
+        ucrBase.iHelpTopicID = 55
     End Sub
 
     Private Sub setDefaults()

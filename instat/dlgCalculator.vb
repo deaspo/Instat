@@ -1,156 +1,231 @@
-﻿Imports RDotNet
+﻿' Instat-R
+' Copyright (C) 2015
+'
+' This program is free software: you can redistribute it and/or modify
+' it under the terms of the GNU General Public License as published by
+' the Free Software Foundation, either version 3 of the License, or
+' (at your option) any later version.
+'
+' This program is distributed in the hope that it will be useful,
+' but WITHOUT ANY WARRANTY; without even the implied warranty of
+' MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+' GNU General Public License for more details.
+'
+' You should have received a copy of the GNU General Public License k
+' along with this program.  If not, see <http://www.gnu.org/licenses/>.
+Imports instat.Translations
+Imports RDotNet
+
 Public Class dlgCalculator
+    Dim strCalcHistory As List(Of String)
     Dim dataset As DataFrame
+    Dim clsAttach As New RFunction
+    Dim clsDetach As New RFunction
+    Public bFirstLoad As Boolean = True
+    Public iHelpCalcID As Integer
 
     Private Sub dlgCalculator_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        ucrBase.OKEnabled(False)
-        cmdBackSpace.Enabled = True
-        txtCalcLine.Select()
-        ucrBase.iHelpTopicID = 14
-    End Sub
-
-    Private Sub AddText(strVar As String, Optional intStepsBack As Integer = 0, Optional bolInsertSelected As Boolean = False)
-        Dim intCurrCursorPosition As Integer
-        Dim strSelectedText As String = txtCalcLine.SelectedText
-
-        txtCalcLine.SelectedText = ""
-        intCurrCursorPosition = txtCalcLine.SelectionStart
-        txtCalcLine.Text = txtCalcLine.Text.Insert(txtCalcLine.SelectionStart, strVar)
-        intCurrCursorPosition = intCurrCursorPosition + strVar.Length - intStepsBack
-        If bolInsertSelected Then
-            txtCalcLine.Text = txtCalcLine.Text.Insert(intCurrCursorPosition, strSelectedText)
-            intCurrCursorPosition = intCurrCursorPosition + strSelectedText.Length + 1
-        End If
-        txtCalcLine.SelectionStart = intCurrCursorPosition
-        txtCalcLine.Select()
-    End Sub
-
-    Private Sub cmd0_Click(sender As Object, e As EventArgs) Handles cmd0.Click
-        AddText("0")
-    End Sub
-
-    Private Sub cmd1_Click(sender As Object, e As EventArgs) Handles cmd1.Click
-        AddText("1")
-    End Sub
-
-    Private Sub cmd2_Click(sender As Object, e As EventArgs) Handles cmd2.Click
-        AddText("2")
-    End Sub
-
-    Private Sub cmd3_Click(sender As Object, e As EventArgs) Handles cmd3.Click
-        AddText("3")
-    End Sub
-
-    Private Sub cmd4_Click(sender As Object, e As EventArgs) Handles cmd4.Click
-        AddText("4")
-    End Sub
-
-    Private Sub cmd5_Click(sender As Object, e As EventArgs) Handles cmd5.Click
-        AddText("5")
-    End Sub
-
-    Private Sub cmd6_Click(sender As Object, e As EventArgs) Handles cmd6.Click
-        AddText("6")
-    End Sub
-
-    Private Sub cmd7_Click(sender As Object, e As EventArgs) Handles cmd7.Click
-        AddText("7")
-    End Sub
-
-    Private Sub cmd8_Click(sender As Object, e As EventArgs) Handles cmd8.Click
-        AddText("8")
-    End Sub
-
-    Private Sub cmd9_Click(sender As Object, e As EventArgs) Handles btn9.Click
-        AddText("9")
-    End Sub
-
-    Private Sub cmdDot_Click(sender As Object, e As EventArgs) Handles cmdDot.Click
-        AddText(".")
-    End Sub
-
-    Private Sub cmdPi_Click(sender As Object, e As EventArgs) Handles cmdPi.Click
-        AddText("pi")
-    End Sub
-
-    Private Sub cmdPlus_Click(sender As Object, e As EventArgs) Handles cmdPlus.Click
-        AddText("+")
-    End Sub
-
-    Private Sub cmdMinus_Click(sender As Object, e As EventArgs) Handles cmdMinus.Click
-        AddText("-")
-    End Sub
-
-    Private Sub cmdMultiply_Click(sender As Object, e As EventArgs) Handles cmdMultiply.Click
-        AddText("*")
-    End Sub
-
-    Private Sub cmdDivide_Click(sender As Object, e As EventArgs) Handles cmdDivide.Click
-        AddText("/")
-    End Sub
-
-    Private Sub lstAvailableVariable_DoubleClick(sender As Object, e As EventArgs)
-        'If lstAvailableVariable.SelectedItem <> "" Then
-        '    AddText("data[[""" & lstAvailableVariable.SelectedItem & """]]")
-        'End If
-    End Sub
-
-    Private Sub cmdPower_Click(sender As Object, e As EventArgs) Handles cmdPower.Click
-        AddText("^")
-    End Sub
-
-    Private Sub cmdOpenBracket_Click(sender As Object, e As EventArgs) Handles cmdOpenBracket.Click
-        AddText("(")
-    End Sub
-
-    Private Sub cmdCloseBracket_Click(sender As Object, e As EventArgs) Handles cmdCloseBracket.Click
-        Dim intCursorPosition As Integer
-
-        intCursorPosition = txtCalcLine.SelectionStart
-        txtCalcLine.Text = txtCalcLine.Text.Insert(txtCalcLine.SelectionStart, ")")
-        txtCalcLine.SelectionStart = intCursorPosition + 1
-        txtCalcLine.Focus()
-    End Sub
-
-    Private Sub cmdRowNumbers_Click(sender As Object, e As EventArgs) Handles cmdRowNumbers.Click
-        AddText("(1:nrow(data))")
-    End Sub
-
-    Private Sub ucrBase_clickOK(sender As Object, e As EventArgs) Handles ucrBase.ClickOk
-        Dim strScript As String
-        strScript = ("data[[" & Chr(34) & txtNewColumnName.Text & Chr(34) & "]]" & " <- " & txtCalcLine.Text).ToString
-        frmMain.clsRLink.RunScript(strScript)
-        'dataset = frmMain.clsRLink.GetData("data")
-        'frmEditor.UpdateSheet(dataset)
-    End Sub
-
-    Private Sub cmdBackSpace_Click(sender As Object, e As EventArgs) Handles cmdBackSpace.Click
-        If txtCalcLine.Text.Length > 0 Then
-            txtCalcLine.Text = txtCalcLine.Text.Remove(txtCalcLine.Text.Length - 1)
-        End If
-    End Sub
-
-    Private Sub txtCalcLine_TextChanged(sender As Object, e As EventArgs) Handles txtCalcLine.TextChanged
-        If txtCalcLine.Text.Length = 0 Then
-            cmdBackSpace.Enabled = False
+        autoTranslate(Me)
+        If bFirstLoad Then
+            InitialiseDialog()
+            SetDefaults()
+            bFirstLoad = False
         Else
-            cmdBackSpace.Enabled = True
+            ReopenDialog()
+        End If
+        TestOKEnabled()
+    End Sub
+
+    Private Sub TestOKEnabled()
+        If Not ucrCalc.ucrReceiverForCalculation.IsEmpty Then
+            If ucrCalc.chkSaveResultInto.Checked AndAlso ucrCalc.ucrSaveResultInto.IsEmpty Then
+                ucrBase.OKEnabled(False)
+            Else
+                ucrBase.OKEnabled(True)
+            End If
+        Else
+            ucrBase.OKEnabled(False)
         End If
     End Sub
 
-    Private Sub cmdSqrt_Click(sender As Object, e As EventArgs) Handles cmdSqrt.Click
-        AddText("sqrt()", 1, True)
+    Private Sub SetDefaults()
+        ucrCalc.ucrSaveResultInto.SetPrefix("Calc")
+        ucrCalc.ucrSaveResultInto.Reset()
+        ucrCalc.ucrInputCalOptions.Reset()
+        ucrCalc.ucrSelectorForCalculations.Reset()
+        ucrCalc.ucrInputCalOptions.SetName("Basic")
+        ucrCalc.chkShowArguments.Checked = False
+        ucrCalc.chkSaveResultInto.Checked = True
+        SaveResults()
+        ucrCalc.ucrSelectorForCalculations.bUseCurrentFilter = False
+        ucrCalc.cmdDoy.Enabled = False
+        ucrCalc.cmdDek.Enabled = False
+        ucrBase.Visible = True
     End Sub
 
-    Private Sub cmdLog10_Click(sender As Object, e As EventArgs) Handles cmdLog10.Click
-        AddText("log10()", 1, True)
+    Private Sub ReopenDialog()
+        SaveResults()
     End Sub
 
-    Private Sub cmdExp_Click(sender As Object, e As EventArgs) Handles cmdExp.Click
-        AddText("exp()", 1, True)
+    Private Sub InitialiseDialog()
+        ucrBase.iHelpTopicID = 14
+        ucrCalc.ucrReceiverForCalculation.SetMeAsReceiver()
+        clsAttach.SetRCommand("attach")
+        clsDetach.SetRCommand("detach")
+        clsAttach.AddParameter("what", clsRFunctionParameter:=ucrCalc.ucrSelectorForCalculations.ucrAvailableDataFrames.clsCurrDataFrame)
+        clsDetach.AddParameter("name", clsRFunctionParameter:=ucrCalc.ucrSelectorForCalculations.ucrAvailableDataFrames.clsCurrDataFrame)
+        clsDetach.AddParameter("unload", "TRUE")
+        ucrBase.clsRsyntax.SetCommandString("")
+        ucrCalc.ucrSaveResultInto.SetItemsTypeAsColumns()
+        ucrCalc.ucrSaveResultInto.SetDefaultTypeAsColumn()
+        ucrCalc.ucrSaveResultInto.SetDataFrameSelector(ucrCalc.ucrSelectorForCalculations.ucrAvailableDataFrames)
+        ucrCalc.ucrSelectorForCalculations.Reset()
+        ucrCalc.ucrSaveResultInto.SetValidationTypeAsRVariable()
     End Sub
 
-    Private Sub txtNewColumnName_TextChanged(sender As Object, e As EventArgs) Handles txtNewColumnName.TextChanged
+    Private Sub ucrCalc_SaveNameChanged() Handles ucrCalc.SaveNameChanged
+        SaveResults()
+        TestOKEnabled()
+    End Sub
 
+    Private Sub SaveResults()
+        If ucrCalc.chkSaveResultInto.Checked Then
+            ucrBase.clsRsyntax.SetAssignTo(ucrCalc.ucrSaveResultInto.GetText(), strTempColumn:=ucrCalc.ucrSaveResultInto.GetText(), strTempDataframe:=ucrCalc.ucrSelectorForCalculations.ucrAvailableDataFrames.cboAvailableDataFrames.Text)
+            ucrBase.clsRsyntax.bExcludeAssignedFunctionOutput = True
+            ucrBase.clsRsyntax.iCallType = 0
+        Else
+            ucrBase.clsRsyntax.RemoveAssignTo()
+            ucrBase.clsRsyntax.iCallType = 2
+            ucrBase.clsRsyntax.bExcludeAssignedFunctionOutput = False
+        End If
+    End Sub
+
+    Private Sub ucrBase_BeforeClickOk(sender As Object, e As EventArgs) Handles ucrBase.BeforeClickOk
+        Dim strScript As String = ""
+        Dim strFunc As String
+        clsAttach.AddParameter("what", clsRFunctionParameter:=ucrCalc.ucrSelectorForCalculations.ucrAvailableDataFrames.clsCurrDataFrame)
+        strFunc = clsAttach.ToScript(strScript)
+        frmMain.clsRLink.RunScript(strScript & strFunc)
+    End Sub
+
+    Private Sub ucrBase_ClickOk(sender As Object, e As EventArgs) Handles ucrBase.ClickOk
+        Dim strScript As String = ""
+        Dim strFunc As String
+        strFunc = clsDetach.ToScript(strScript)
+        frmMain.clsRLink.RunScript(strScript & strFunc)
+        ucrCalc.SetCalculationHistory()
+    End Sub
+
+    Private Sub ucrCalc_SelectionChanged() Handles ucrCalc.SelectionChanged
+        ucrBase.clsRsyntax.SetCommandString(ucrCalc.ucrReceiverForCalculation.GetVariableNames(False))
+        ucrCalc.ucrInputTryMessage.SetName("")
+        ucrCalc.cmdTry.Enabled = Not ucrCalc.ucrReceiverForCalculation.IsEmpty()
+        TestOKEnabled()
+    End Sub
+
+    Private Sub ucrBase_ClickReset(sender As Object, e As EventArgs)
+        SetDefaults()
+        TestOKEnabled()
+    End Sub
+
+    Private Sub ucrInputCalOptions_NameChanged() Handles ucrCalc.NameChanged
+        CalculationsOptions()
+    End Sub
+
+    Private Sub CalculationsOptions()
+        Select Case ucrCalc.ucrInputCalOptions.GetText
+            Case "Maths"
+                Me.Size = New System.Drawing.Size(680, 435)
+            Case "Logical and Symbols"
+                Me.Size = New System.Drawing.Size(627, 435)
+            Case "Statistics"
+                Me.Size = New System.Drawing.Size(588, 435)
+            Case "Strings (Character Columns)"
+                Me.Size = New System.Drawing.Size(630, 435)
+            Case "Probability"
+                Me.Size = New System.Drawing.Size(810, 435)
+            Case "Dates"
+                Me.Size = New System.Drawing.Size(660, 435)
+            Case "Rows"
+                Me.Size = New System.Drawing.Size(615, 435)
+            Case Else
+                Me.Size = New System.Drawing.Size(510, 435)
+        End Select
+    End Sub
+
+    Private Sub chkSaveResultInto_CheckedChanged() Handles ucrCalc.SaveResultsCheckedChanged
+        SaveResults()
+        ShowControl()
+    End Sub
+
+    Private Sub ucrSelectorForCalculations_DataframeChanged() Handles ucrCalc.DataFrameChanged
+        ucrCalc.ucrInputTryMessage.SetName("")
+        SaveResults()
+    End Sub
+
+    Private Sub ShowControl()
+        If ucrCalc.chkSaveResultInto.Checked Then
+            ucrCalc.ucrSaveResultInto.Visible = True
+        Else
+            ucrCalc.ucrSaveResultInto.Visible = False
+        End If
+    End Sub
+
+    Private Sub TryScript()
+        Dim strOutPut As String
+        Dim strAttach As String
+        Dim strDetach As String
+        Dim strTempScript As String = ""
+        Dim strVecOutput As CharacterVector
+        Dim bIsAssigned As Boolean
+        Dim bToBeAssigned As Boolean
+        Dim strAssignTo As String
+        Dim strAssignToColumn As String
+        Dim strAssignToDataFrame As String
+
+        bIsAssigned = ucrBase.clsRsyntax.GetbIsAssigned()
+        bToBeAssigned = ucrBase.clsRsyntax.GetbToBeAssigned()
+        strAssignTo = ucrBase.clsRsyntax.GetstrAssignTo()
+        'These should really be done through RSyntax methods as above
+        strAssignToColumn = ucrBase.clsRsyntax.GetstrAssignToColumn()
+        strAssignToDataFrame = ucrBase.clsRsyntax.GetstrAssignToDataFrame()
+
+        Try
+            If ucrCalc.ucrReceiverForCalculation.IsEmpty Then
+                ucrCalc.ucrInputTryMessage.SetName("")
+            Else
+                'get strScript here
+                strAttach = clsAttach.ToScript(strTempScript)
+                frmMain.clsRLink.RunInternalScript(strTempScript & strAttach, bSilent:=True)
+                ucrBase.clsRsyntax.RemoveAssignTo()
+                strOutPut = ucrBase.clsRsyntax.GetScript
+                strVecOutput = frmMain.clsRLink.RunInternalScriptGetOutput(strOutPut, bSilent:=True)
+                If strVecOutput IsNot Nothing Then
+                    If strVecOutput.Length > 1 Then
+                        ucrCalc.ucrInputTryMessage.SetName(Mid(strVecOutput(0), 5) & "...")
+                    Else
+                        ucrCalc.ucrInputTryMessage.SetName(Mid(strVecOutput(0), 5))
+                    End If
+                Else
+                    ucrCalc.ucrInputTryMessage.SetName("Command produced an error or no output to display.")
+                End If
+            End If
+        Catch ex As Exception
+            ucrCalc.ucrInputTryMessage.SetName("Command produced an error. Modify input before running.")
+        Finally
+            strTempScript = ""
+            strDetach = clsDetach.ToScript(strTempScript)
+            frmMain.clsRLink.RunInternalScript(strTempScript & strDetach, bSilent:=True)
+            ucrBase.clsRsyntax.SetbIsAssigned(bIsAssigned)
+            ucrBase.clsRsyntax.SetbToBeAssigned(bToBeAssigned)
+            ucrBase.clsRsyntax.SetstrAssignTo(strAssignTo)
+            'These should really be done through RSyntax methods as above
+            ucrBase.clsRsyntax.SetstrAssignToColumn(strAssignToColumn)
+            ucrBase.clsRsyntax.SetstrAssignToDataFrame(strAssignToDataFrame)
+        End Try
+    End Sub
+
+    Private Sub cmdTry_Click() Handles ucrCalc.TryCommadClick
+        TryScript()
     End Sub
 End Class

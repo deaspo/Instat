@@ -51,14 +51,19 @@ Public Class dlgLabels
     Private Sub SetDefaults()
         ucrSelectorForLabels.Reset()
         ucrSelectorForLabels.Focus()
+        SetNewLevels()
     End Sub
 
     Private Sub ucrBase_ClickReset(sender As Object, e As EventArgs) Handles ucrBase.ClickReset
-        TestOKEnabled()
         SetDefaults()
+        TestOKEnabled()
     End Sub
 
     Private Sub ucrFactorLabels_GridContentChanged() Handles ucrFactorLabels.GridContentChanged
+        SetNewLevels()
+    End Sub
+
+    Private Sub SetNewLevels()
         If ucrFactorLabels.IsColumnComplete(0) Then
             ucrBase.clsRsyntax.AddParameter("new_levels", ucrFactorLabels.GetColumnInFactorSheet(iColumn:=0))
         Else
@@ -75,7 +80,6 @@ Public Class dlgLabels
         End If
         TestOKEnabled()
     End Sub
-
 
     Private Sub ucrSelectorForLabels_DataFrameChanged() Handles ucrSelectorForLabels.DataFrameChanged
         ucrBase.clsRsyntax.AddParameter("data_name", Chr(34) & ucrSelectorForLabels.ucrAvailableDataFrames.cboAvailableDataFrames.Text & Chr(34))

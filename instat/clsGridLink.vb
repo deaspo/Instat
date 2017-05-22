@@ -17,6 +17,7 @@ Imports RDotNet
 Imports unvell.ReoGrid
 
 Public Class clsGridLink
+    Public ucrDataViewer As ucrDataView
     Public grdData As ReoGridControl
     Public grdMetadata As ReoGridControl
     Public grdVariablesMetadata As ReoGridControl
@@ -27,6 +28,9 @@ Public Class clsGridLink
     Public bGrdMetadataChanged As Boolean
     Public bGrdVariablesMetadataChanged As Boolean
     Public iMaxRows As Integer
+    Private strMetadata As String
+    Public fntText As Font = New Font("Microsoft Sans Serif", 10, FontStyle.Regular)
+    Public clrText As Color = Color.Black
 
     Public Sub New()
         grdData = New ReoGridControl
@@ -50,35 +54,70 @@ Public Class clsGridLink
         Dim i As Integer
         Dim j As Integer
         Dim k As Integer
-        Dim dfTemp As CharacterMatrix
+        Dim dfTemp As DataFrame
         Dim strDataName As String
         Dim shtTemp As Worksheet
+        Dim clsDataChanged As New RFunction
+        Dim clsMetadataChanged As New RFunction
+        Dim clsVariablesMetadataChanged As New RFunction
+        Dim clsGetDataNames As New RFunction
+        Dim clsGetDataFrame As New RFunction
+        Dim clsFilterApplied As New RFunction
+        Dim clsSetDataFramesChanged As New RFunction
+        Dim clsGetVariablesMetadata As New RFunction
+        Dim clsSetVariablesMetadataChanged As New RFunction
+        Dim clsGetCombinedMetadata As New RFunction
+        Dim clsSetMetadataChanged As New RFunction
+
+        clsDataChanged.SetRCommand(frmMain.clsRLink.strInstatDataObject & "$get_data_changed")
+        clsMetadataChanged.SetRCommand(frmMain.clsRLink.strInstatDataObject & "$get_metadata_changed")
+        clsVariablesMetadataChanged.SetRCommand(frmMain.clsRLink.strInstatDataObject & "$get_variables_metadata_changed")
+        clsGetDataNames.SetRCommand(frmMain.clsRLink.strInstatDataObject & "$get_data_names")
+        clsGetDataFrame.SetRCommand(frmMain.clsRLink.strInstatDataObject & "$get_data_frame")
+        clsGetDataFrame.AddParameter("convert_to_character", "TRUE")
+        clsGetDataFrame.AddParameter("include_hidden_columns", "FALSE")
+        clsGetDataFrame.AddParameter("use_current_filter", "TRUE")
+        clsFilterApplied.SetRCommand(frmMain.clsRLink.strInstatDataObject & "$filter_applied")
+        clsSetDataFramesChanged.SetRCommand(frmMain.clsRLink.strInstatDataObject & "$set_data_frames_changed")
+        clsGetVariablesMetadata.SetRCommand(frmMain.clsRLink.strInstatDataObject & "$get_variables_metadata")
+        clsGetVariablesMetadata.AddParameter("convert_to_character", "TRUE")
+        clsSetVariablesMetadataChanged.SetRCommand(frmMain.clsRLink.strInstatDataObject & "$set_variables_metadata_changed")
+        clsGetCombinedMetadata.SetRCommand(frmMain.clsRLink.strInstatDataObject & "$get_combined_metadata")
+        clsSetMetadataChanged.SetRCommand(frmMain.clsRLink.strInstatDataObject & "$set_metadata_changed")
 
         If Not frmMain.clsRLink.bInstatObjectExists Then Exit Sub
 
-        bRDataChanged = frmMain.clsRLink.clsEngine.Evaluate(frmMain.clsRLink.strInstatDataObject & "$get_data_changed()").AsLogical(0)
-        bRMetadataChanged = frmMain.clsRLink.clsEngine.Evaluate(frmMain.clsRLink.strInstatDataObject & "$get_metadata_changed()").AsLogical(0)
-        bRVariablesMetadataChanged = frmMain.clsRLink.clsEngine.Evaluate(frmMain.clsRLink.strInstatDataObject & "$get_variables_metadata_changed()").AsLogical(0)
+        bRDataChanged = frmMain.clsRLink.RunInternalScriptGetValue(clsDataChanged.ToScript()).AsLogical(0)
+        bRMetadataChanged = frmMain.clsRLink.RunInternalScriptGetValue(clsMetadataChanged.ToScript()).AsLogical(0)
+        bRVariablesMetadataChanged = frmMain.clsRLink.RunInternalScriptGetValue(clsVariablesMetadataChanged.ToScript()).AsLogical(0)
 
         If (bGrdDataExists And (bGrdDataChanged Or bRDataChanged)) Or (bGrdVariablesMetadataExists And (bGrdVariablesMetadataChanged Or bRVariablesMetadataChanged)) Then
-            lstDataNames = frmMain.clsRLink.clsEngine.Evaluate(frmMain.clsRLink.strInstatDataObject & "$get_data_names()").AsList
+            lstDataNames = frmMain.clsRLink.RunInternalScriptGetValue(clsGetDataNames.ToScript()).AsList
             For i = 0 To lstDataNames.Length - 1
                 strDataName = lstDataNames.AsCharacter(i)
-                If (bGrdDataExists AndAlso frmMain.clsRLink.clsEngine.Evaluate(frmMain.clsRLink.strInstatDataObject & "$get_data_changed(data_name = " & Chr(34) & strDataName & Chr(34) & ")").AsLogical(0)) Then
-                    frmMain.clsRLink.clsEngine.Evaluate(strDataName & "<-" & frmMain.clsRLink.strInstatDataObject & "$get_data_frame(" & Chr(34) & strDataName & Chr(34) & ", convert_to_character = TRUE, include_hidden_columns = FALSE, use_current_filter = TRUE)")
-                    dfTemp = frmMain.clsRLink.clsEngine.GetSymbol(strDataName).AsCharacterMatrix()
-                    If frmMain.clsRLink.RunInternalScriptGetValue(frmMain.clsRLink.strInstatDataObject & "$filter_applied(data_name = " & Chr(34) & strDataName & Chr(34) & ")").AsLogical(0) Then
-                        FillSheet(dfTemp, strDataName, grdData, bInstatObjectDataFrame:=True, bIncludeDataTypes:=True, iNewPosition:=i, bFilterApplied:=True)
+                clsDataChanged.AddParameter("data_name", Chr(34) & strDataName & Chr(34))
+                If (bGrdDataExists AndAlso frmMain.clsRLink.RunInternalScriptGetValue(clsDataChanged.ToScript()).AsLogical(0)) Then
+                    clsGetDataFrame.AddParameter("data_name", Chr(34) & strDataName & Chr(34))
+                    dfTemp = frmMain.clsRLink.RunInternalScriptGetValue(clsGetDataFrame.ToScript()).AsDataFrame
+                    clsFilterApplied.AddParameter("data_name", Chr(34) & strDataName & Chr(34))
+                    If frmMain.clsRLink.RunInternalScriptGetValue(clsFilterApplied.ToScript()).AsLogical(0) Then
+                        FillSheet(dfTemp, strDataName, grdData, bInstatObjectDataFrame:=True, bIncludeDataTypes:=True, iNewPosition:=i, bFilterApplied:=True, bCheckFreezeColumns:=True)
                     Else
-                        FillSheet(dfTemp, strDataName, grdData, bInstatObjectDataFrame:=True, bIncludeDataTypes:=True, iNewPosition:=i)
+                        FillSheet(dfTemp, strDataName, grdData, bInstatObjectDataFrame:=True, bIncludeDataTypes:=True, iNewPosition:=i, bFilterApplied:=False, bCheckFreezeColumns:=True)
                     End If
-                    frmEditor.SetColumnNames(strDataName, dfTemp.ColumnNames())
-                    frmMain.clsRLink.clsEngine.Evaluate(frmMain.clsRLink.strInstatDataObject & "$set_data_frames_changed(" & Chr(34) & strDataName & Chr(34) & ", FALSE)")
+                    ucrDataViewer.SetColumnNames(strDataName, dfTemp.ColumnNames())
+                    clsSetDataFramesChanged.AddParameter("data_name", Chr(34) & strDataName & Chr(34))
+                    clsSetDataFramesChanged.AddParameter("new_val", "FALSE")
+                    frmMain.clsRLink.RunInternalScript(clsSetDataFramesChanged.ToScript())
                 End If
-                If (bGrdVariablesMetadataExists And frmMain.clsRLink.clsEngine.Evaluate(frmMain.clsRLink.strInstatDataObject & "$get_variables_metadata_changed(" & Chr(34) & strDataName & Chr(34) & ")").AsLogical(0)) Then
-                    dfTemp = frmMain.clsRLink.clsEngine.Evaluate(frmMain.clsRLink.strInstatDataObject & "$get_variables_metadata(" & Chr(34) & strDataName & Chr(34) & ", convert_to_character = TRUE)").AsCharacterMatrix()
+                clsVariablesMetadataChanged.AddParameter("data_name", Chr(34) & strDataName & Chr(34))
+                If (bGrdVariablesMetadataExists AndAlso frmMain.clsRLink.RunInternalScriptGetValue(clsVariablesMetadataChanged.ToScript()).AsLogical(0)) Then
+                    clsGetVariablesMetadata.AddParameter("data_name", Chr(34) & strDataName & Chr(34))
+                    dfTemp = frmMain.clsRLink.RunInternalScriptGetValue(clsGetVariablesMetadata.ToScript()).AsDataFrame()
                     FillSheet(dfTemp, strDataName, grdVariablesMetadata)
-                    frmMain.clsRLink.clsEngine.Evaluate(frmMain.clsRLink.strInstatDataObject & "$set_variables_metadata_changed(" & Chr(34) & strDataName & Chr(34) & ", FALSE)")
+                    clsSetVariablesMetadataChanged.AddParameter("data_name", Chr(34) & strDataName & Chr(34))
+                    clsSetVariablesMetadataChanged.AddParameter("new_val", "TRUE")
+                    frmMain.clsRLink.RunInternalScript(clsSetVariablesMetadataChanged.ToScript())
                 End If
             Next
             'delete old sheets
@@ -125,12 +164,14 @@ Public Class clsGridLink
         End If
 
         If bGrdMetadataExists And (bGrdMetadataChanged Or bRMetadataChanged) Then
-            dfTemp = frmMain.clsRLink.clsEngine.Evaluate(frmMain.clsRLink.strInstatDataObject & "$get_combined_metadata(convert_to_character = TRUE)").AsCharacterMatrix()
+            clsGetCombinedMetadata.AddParameter("convert_to_character", "TRUE")
+            dfTemp = frmMain.clsRLink.RunInternalScriptGetValue(clsGetCombinedMetadata.ToScript()).AsDataFrame()
             FillSheet(dfTemp, "metadata", grdMetadata)
-            frmMain.clsRLink.clsEngine.Evaluate(frmMain.clsRLink.strInstatDataObject & "$set_metadata_changed(new_val = FALSE)")
+            clsSetMetadataChanged.AddParameter("new_val", "TRUE")
+            frmMain.clsRLink.RunInternalScript(clsSetMetadataChanged.ToScript())
         End If
 
-        frmMain.clsRLink.clsEngine.Evaluate(frmMain.clsRLink.strInstatDataObject & "$data_objects_changed <- FALSE")
+        frmMain.clsRLink.RunInternalScript(frmMain.clsRLink.strInstatDataObject & "$data_objects_changed <- FALSE")
 
         If grdData.Worksheets.Count = 0 Then
             grdData.Visible = False
@@ -141,10 +182,34 @@ Public Class clsGridLink
             grdVariablesMetadata.Visible = True
             grdMetadata.Visible = True
         End If
+        ucrDataViewer.UpdateCurrentWorksheet()
     End Sub
 
-    Public Sub SetData(grdTemp As ReoGridControl)
-        grdData = grdTemp
+    Public Sub SetMetadata(tmpStrMetadata As String)
+        strMetadata = tmpStrMetadata
+    End Sub
+
+    Private Sub SetDataViewColumnColor(grdSheet As Worksheet, iColumn As Integer, bApplyColour As Boolean, Optional iColour As Integer = -1)
+        Dim selRangeDataView As New RangePosition
+
+        'grdSheet.SelectColumns(iColumn, 1)
+        'selRangeDataView = grdSheet.SelectionRange
+        'If bApplyColour AndAlso iColour >= 0 AndAlso iColour < frmMain.clsInstatOptions.lstColourPalette.Count Then
+        '    grdSheet.SetRangeStyles(selRangeDataView, New WorksheetRangeStyle() With {.Flag = PlainStyleFlag.BackColor, .BackColor = frmMain.clsInstatOptions.lstColourPalette(iColour - 1)})
+        'Else
+        '    grdSheet.RemoveRangeStyles(selRangeDataView, PlainStyleFlag.All)
+        'End If
+
+        If iColour >= 0 AndAlso iColour < frmMain.clsInstatOptions.lstColourPalette.Count Then
+            grdSheet.ColumnHeaders(iColumn).Style.BackColor = frmMain.clsInstatOptions.lstColourPalette(iColour - 1)
+        ElseIf iColour = -1 Then
+            grdSheet.ColumnHeaders(iColumn).Style.BackColor = Nothing
+        End If
+    End Sub
+
+    Public Sub SetDataViewer(ucrNewDataViewer As ucrDataView)
+        ucrDataViewer = ucrNewDataViewer
+        grdData = ucrNewDataViewer.grdData
         bGrdDataExists = True
         bGrdDataChanged = True
         UpdateGrids()
@@ -164,17 +229,24 @@ Public Class clsGridLink
         UpdateGrids()
     End Sub
 
-    Public Sub FillSheet(dfTemp As CharacterMatrix, strName As String, grdCurr As ReoGridControl, Optional bInstatObjectDataFrame As Boolean = False, Optional bIncludeDataTypes As Boolean = False, Optional iNewPosition As Integer = -1, Optional bFilterApplied As Boolean = False)
+    Public Sub FillSheet(dfTemp As DataFrame, strName As String, grdCurr As ReoGridControl, Optional bInstatObjectDataFrame As Boolean = False, Optional bIncludeDataTypes As Boolean = False, Optional iNewPosition As Integer = -1, Optional bFilterApplied As Boolean = False, Optional bCheckFreezeColumns As Boolean = False)
         Dim bFoundWorksheet As Boolean = False
         Dim tempWorkSheet As Worksheet
         Dim fillWorkSheet As Worksheet
         Dim rngDataRange As RangePosition
         Dim vecColumnDataTypes As CharacterVector
         Dim clsGetVarMetaFunc As New RFunction
+        Dim clsIsVarMetaFunc As New RFunction
+        Dim clsHasColoursFunc As New RFunction
+        Dim clsGetColumnNames As New RFunction
         Dim iCurrPosition As Integer
         Dim iCount As Integer
         Dim strRowNames As String()
         Dim strColumnNames As String()
+        Dim bIsFrozen As Boolean
+        Dim vecColumnColours As NumericVector
+        Dim bApplyColumnColours As Boolean
+        Dim i, j, k As Integer
 
         iCount = 0
         For Each tempWorkSheet In grdCurr.Worksheets
@@ -197,37 +269,51 @@ Public Class clsGridLink
         If iNewPosition <> -1 AndAlso iNewPosition <> iCurrPosition AndAlso iNewPosition < grdCurr.Worksheets.Count Then
             grdCurr.MoveWorksheet(fillWorkSheet, iNewPosition)
         End If
-        fillWorkSheet.Rows = Math.Min(iMaxRows, dfTemp.RowCount)
         fillWorkSheet.Columns = dfTemp.ColumnCount
-        rngDataRange = New RangePosition(0, 0, fillWorkSheet.Rows, fillWorkSheet.Columns)
-        fillWorkSheet.SetRangeDataFormat(rngDataRange, DataFormat.CellDataFormatFlag.Text)
-        For i As Integer = 0 To fillWorkSheet.Rows - 1
-            For j As Integer = 0 To fillWorkSheet.Columns - 1
-                fillWorkSheet(row:=i, col:=j) = dfTemp(i, j)
-            Next
-        Next
-        strRowNames = dfTemp.RowNames
-        For i As Integer = 0 To fillWorkSheet.Rows - 1
-            fillWorkSheet.RowHeaders.Item(i).Text = strRowNames(i)
-        Next
-
-        If bFilterApplied Then
-            For i As Integer = 0 To fillWorkSheet.Rows - 1
-                fillWorkSheet.RowHeaders(i).TextColor = Color.Red
-            Next
-        Else
-            For i As Integer = 0 To fillWorkSheet.Rows - 1
-                fillWorkSheet.RowHeaders(i).TextColor = Color.DarkBlue
-            Next
-        End If
         strColumnNames = dfTemp.ColumnNames
+        If dfTemp.RowCount = 0 Then
+            'TODO Does this reset any changes that we need to keep?
+            '     (Formatting is reapplied below)
+            fillWorkSheet.Reset(1, dfTemp.ColumnCount)
+            fillWorkSheet.SetRowsHeight(0, 1, 0.1)
+            fillWorkSheet.SetSettings(unvell.ReoGrid.WorksheetSettings.Edit_AllowAdjustRowHeight, False)
+        Else
+            fillWorkSheet.SetSettings(unvell.ReoGrid.WorksheetSettings.Edit_AllowAdjustRowHeight, True)
+            fillWorkSheet.Rows = Math.Min(iMaxRows, dfTemp.RowCount)
+            fillWorkSheet.SetRowsHeight(0, 1, 20)
+            rngDataRange = New RangePosition(0, 0, fillWorkSheet.Rows, fillWorkSheet.Columns)
+            fillWorkSheet.SetRangeDataFormat(rngDataRange, DataFormat.CellDataFormatFlag.Text)
+            For i = 0 To fillWorkSheet.Rows - 1
+                For j = 0 To fillWorkSheet.Columns - 1
+                    fillWorkSheet(row:=i, col:=j) = dfTemp(i, j)
+                Next
+            Next
+            strRowNames = dfTemp.RowNames
+            For i = 0 To fillWorkSheet.Rows - 1
+                fillWorkSheet.RowHeaders.Item(i).Text = strRowNames(i)
+            Next
+
+            If bFilterApplied Then
+                For i = 0 To fillWorkSheet.Rows - 1
+                    fillWorkSheet.RowHeaders(i).TextColor = Color.Red
+                Next
+            Else
+                For i = 0 To fillWorkSheet.Rows - 1
+                    fillWorkSheet.RowHeaders(i).TextColor = Color.DarkBlue
+                Next
+            End If
+            FormatDataView(fillWorkSheet)
+        End If
         Try
+            clsGetColumnNames.SetRCommand(frmMain.clsRLink.strInstatDataObject & "$get_column_names")
+            clsGetColumnNames.AddParameter("data_name", Chr(34) & strName & Chr(34))
+            clsGetColumnNames.AddParameter("include", "list(Is_Hidden = FALSE)")
             If bIncludeDataTypes Then
                 If bInstatObjectDataFrame AndAlso frmMain.clsRLink.bInstatObjectExists Then
                     clsGetVarMetaFunc.SetRCommand(frmMain.clsRLink.strInstatDataObject & "$get_variables_metadata")
                     clsGetVarMetaFunc.AddParameter("data_name", Chr(34) & strName & Chr(34))
                     clsGetVarMetaFunc.AddParameter("property", "data_type_label")
-                    clsGetVarMetaFunc.AddParameter("column", ListAsRString(dfTemp.ColumnNames()))
+                    clsGetVarMetaFunc.AddParameter("column", clsRFunctionParameter:=clsGetColumnNames)
                 Else
                     clsGetVarMetaFunc.SetRCommand("sapply")
                     clsGetVarMetaFunc.AddParameter("X", strName)
@@ -236,27 +322,81 @@ Public Class clsGridLink
 
                 vecColumnDataTypes = frmMain.clsRLink.RunInternalScriptGetValue(clsGetVarMetaFunc.ToScript()).AsCharacter
 
-                For k As Integer = 0 To dfTemp.ColumnCount - 1
-                    Select Case vecColumnDataTypes(k)
-                        Case "factor"
-                            fillWorkSheet.ColumnHeaders(k).Text = strColumnNames(k) & " (f)"
-                        Case "character"
-                            fillWorkSheet.ColumnHeaders(k).Text = strColumnNames(k) & " (c)"
-                        Case "Date"
-                            fillWorkSheet.ColumnHeaders(k).Text = strColumnNames(k) & " (D)"
-                        Case Else
-                            fillWorkSheet.ColumnHeaders(k).Text = strColumnNames(k)
-                    End Select
+                For k = 0 To dfTemp.ColumnCount - 1
+                    If vecColumnDataTypes(k).Contains("factor") Then
+                        fillWorkSheet.ColumnHeaders(k).Text = strColumnNames(k) & " (f)"
+                    ElseIf vecColumnDataTypes(k).Contains("character") Then
+                        fillWorkSheet.ColumnHeaders(k).Text = strColumnNames(k) & " (c)"
+                    ElseIf vecColumnDataTypes(k).Contains("Date") Then
+                        fillWorkSheet.ColumnHeaders(k).Text = strColumnNames(k) & " (D)"
+                    Else
+                        fillWorkSheet.ColumnHeaders(k).Text = strColumnNames(k)
+                    End If
                 Next
             Else
-                For k As Integer = 0 To dfTemp.ColumnCount - 1
-                    fillWorkSheet.ColumnHeaders(k).Text = strColumnNames(k)
-                Next
+                If strColumnNames IsNot Nothing Then
+                    For k = 0 To dfTemp.ColumnCount - 1
+                        fillWorkSheet.ColumnHeaders(k).Text = strColumnNames(k)
+                    Next
+                Else
+                    For k = 0 To dfTemp.ColumnCount - 1
+                        fillWorkSheet.ColumnHeaders(k).Text = ""
+                    Next
+                End If
             End If
             grdCurr.CurrentWorksheet = fillWorkSheet
+            If bInstatObjectDataFrame AndAlso frmMain.clsRLink.bInstatObjectExists Then
+                clsHasColoursFunc.ClearParameters()
+                clsHasColoursFunc.SetRCommand(frmMain.clsRLink.strInstatDataObject & "$has_colours")
+                clsHasColoursFunc.AddParameter("data_name", Chr(34) & strName & Chr(34))
+                clsHasColoursFunc.AddParameter("columns", clsRFunctionParameter:=clsGetColumnNames)
+                bApplyColumnColours = frmMain.clsRLink.RunInternalScriptGetValue(clsHasColoursFunc.ToScript()).AsLogical(0)
+                If bApplyColumnColours Then
+                    clsGetVarMetaFunc.ClearParameters()
+                    clsGetVarMetaFunc.SetRCommand(frmMain.clsRLink.strInstatDataObject & "$get_variables_metadata")
+                    clsGetVarMetaFunc.AddParameter("data_name", Chr(34) & strName & Chr(34))
+                    clsGetVarMetaFunc.AddParameter("property", "colour_label")
+                    clsGetVarMetaFunc.AddParameter("column", clsRFunctionParameter:=clsGetColumnNames)
+                    vecColumnColours = frmMain.clsRLink.RunInternalScriptGetValue(clsGetVarMetaFunc.ToScript()).AsNumeric
+                    For k = 0 To dfTemp.ColumnCount - 1
+                        SetDataViewColumnColor(grdCurr.CurrentWorksheet, k, bApplyColumnColours, vecColumnColours(k).ToString())
+                    Next
+                End If
+            End If
         Catch ex As Exception
             'TODO what to do in this case?
         End Try
+        If grdCurr.CurrentWorksheet.IsFrozen() Then
+            grdCurr.CurrentWorksheet.FreezeToCell(row:=0, col:=0)
+        End If
+        If bCheckFreezeColumns AndAlso frmMain.clsRLink.bInstatObjectExists Then
+            clsGetVarMetaFunc.SetRCommand(frmMain.clsRLink.strInstatDataObject & "$get_variables_metadata")
+            clsGetVarMetaFunc.ClearParameters()
+            clsGetVarMetaFunc.AddParameter("data_name", Chr(34) & strName & Chr(34))
+            clsGetVarMetaFunc.AddParameter("property", "is_frozen_label")
+
+            clsIsVarMetaFunc.SetRCommand(frmMain.clsRLink.strInstatDataObject & "$is_variables_metadata")
+            clsIsVarMetaFunc.AddParameter("data_name", Chr(34) & strName & Chr(34))
+            clsIsVarMetaFunc.AddParameter("property", "is_frozen_label")
+            'TODO fix freezing bugs
+            'bIsFrozen = frmMain.clsRLink.RunInternalScriptGetValue(clsIsVarMetaFunc.ToScript()).AsLogical(0)
+            ' temp fix
+            bIsFrozen = False
+            If bIsFrozen Then
+                For k = 0 To dfTemp.ColumnCount - 1
+                    clsGetVarMetaFunc.AddParameter("column", Chr(34) & strColumnNames(k) & Chr(34))
+                    bIsFrozen = frmMain.clsRLink.RunInternalScriptGetValue(clsGetVarMetaFunc.ToScript()).AsLogical(0)
+                    If bIsFrozen Then
+                        If k = dfTemp.ColumnCount - 1 Then
+                            MsgBox("Cannot freeze all columns.", Title:="Cannot freeze")
+                        Else
+                            grdCurr.CurrentWorksheet.FreezeToCell(row:=0, col:=k + 1)
+                        End If
+                        Exit For
+                    End If
+                Next
+            End If
+        End If
 
     End Sub
 
@@ -282,18 +422,25 @@ Public Class clsGridLink
         bGrdDataChanged = True
         bGrdMetadataChanged = True
         bGrdVariablesMetadataChanged = True
+        'TODO This causes the last sheet to be current sheet after running this.
+        '     Need to change how this is done so that the current sheet is remembered before changing.
         If frmMain.clsRLink.bInstatObjectExists Then
             frmMain.clsRLink.RunInternalScript(frmMain.clsRLink.strInstatDataObject & "$data_objects_changed <- TRUE")
         End If
         UpdateGrids()
     End Sub
 
-    Public Sub FormatDataVIew(fntNew As Font, clrNew As Color)
-        Dim tmpSheets As Worksheet
-        For Each tmpSheets In frmMain.clsGrids.grdData.Worksheets
-            tmpSheets.SetRangeStyles(RangePosition.EntireRange, New WorksheetRangeStyle() With {
-                             .Flag = PlainStyleFlag.TextColor Or PlainStyleFlag.FontSize Or PlainStyleFlag.FontName, .TextColor = clrNew, .FontSize = fntNew.Size, .FontName = fntNew.Name})
-
+    Public Sub SetFormatDataView(fntNew As Font, clrNew As Color)
+        fntText = fntNew
+        clrText = clrNew
+        For Each tmpSheet In grdData.Worksheets
+            FormatDataView(tmpSheet)
         Next
+    End Sub
+
+    Public Sub FormatDataView(shtCurrent As Worksheet)
+        shtCurrent.SetRangeStyles(RangePosition.EntireRange, New WorksheetRangeStyle() With {
+                                .Flag = PlainStyleFlag.TextColor Or PlainStyleFlag.FontSize Or PlainStyleFlag.FontName, .TextColor = clrText, .FontSize = fntText.Size, .FontName = fntText.Name
+                                })
     End Sub
 End Class

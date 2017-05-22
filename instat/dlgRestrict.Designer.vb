@@ -32,17 +32,16 @@ Partial Class dlgRestrict
         Me.grpApplyOptions = New System.Windows.Forms.GroupBox()
         Me.rdoApplyAsSubset = New System.Windows.Forms.RadioButton()
         Me.rdoApplyAsFilter = New System.Windows.Forms.RadioButton()
-        Me.lblNewDataFrameName = New System.Windows.Forms.Label()
-        Me.ucrNewDataFrameName = New instat.ucrInputTextBox()
+        Me.ucrNewDataFrameName = New instat.ucrSave()
         Me.grpApplyOptions.SuspendLayout()
         Me.SuspendLayout()
         '
         'cmdDefineNewFilter
         '
-        Me.cmdDefineNewFilter.Location = New System.Drawing.Point(250, 95)
+        Me.cmdDefineNewFilter.Location = New System.Drawing.Point(259, 95)
         Me.cmdDefineNewFilter.Name = "cmdDefineNewFilter"
         Me.cmdDefineNewFilter.Size = New System.Drawing.Size(120, 23)
-        Me.cmdDefineNewFilter.TabIndex = 1
+        Me.cmdDefineNewFilter.TabIndex = 3
         Me.cmdDefineNewFilter.Tag = "Define_New_Filter"
         Me.cmdDefineNewFilter.Text = "Define New Filter"
         Me.cmdDefineNewFilter.UseVisualStyleBackColor = True
@@ -50,69 +49,73 @@ Partial Class dlgRestrict
         'ucrSelectorFilter
         '
         Me.ucrSelectorFilter.bShowHiddenColumns = False
+        Me.ucrSelectorFilter.bUseCurrentFilter = True
         Me.ucrSelectorFilter.Location = New System.Drawing.Point(10, 10)
         Me.ucrSelectorFilter.Margin = New System.Windows.Forms.Padding(0)
         Me.ucrSelectorFilter.Name = "ucrSelectorFilter"
         Me.ucrSelectorFilter.Size = New System.Drawing.Size(210, 180)
-        Me.ucrSelectorFilter.TabIndex = 5
+        Me.ucrSelectorFilter.TabIndex = 0
         '
         'ucrBase
         '
-        Me.ucrBase.Location = New System.Drawing.Point(10, 318)
+        Me.ucrBase.Location = New System.Drawing.Point(10, 307)
         Me.ucrBase.Name = "ucrBase"
         Me.ucrBase.Size = New System.Drawing.Size(410, 53)
-        Me.ucrBase.TabIndex = 0
+        Me.ucrBase.TabIndex = 8
         '
         'lblFilter
         '
         Me.lblFilter.AutoSize = True
-        Me.lblFilter.Location = New System.Drawing.Point(247, 21)
+        Me.lblFilter.Location = New System.Drawing.Point(249, 45)
         Me.lblFilter.Name = "lblFilter"
-        Me.lblFilter.Size = New System.Drawing.Size(29, 13)
-        Me.lblFilter.TabIndex = 10
-        Me.lblFilter.Text = "Filter"
+        Me.lblFilter.Size = New System.Drawing.Size(32, 13)
+        Me.lblFilter.TabIndex = 1
+        Me.lblFilter.Text = "Filter:"
         '
         'ucrReceiverFilter
         '
-        Me.ucrReceiverFilter.Location = New System.Drawing.Point(250, 38)
+        Me.ucrReceiverFilter.frmParent = Me
+        Me.ucrReceiverFilter.Location = New System.Drawing.Point(250, 60)
         Me.ucrReceiverFilter.Margin = New System.Windows.Forms.Padding(0)
         Me.ucrReceiverFilter.Name = "ucrReceiverFilter"
         Me.ucrReceiverFilter.Selector = Nothing
-        Me.ucrReceiverFilter.Size = New System.Drawing.Size(120, 20)
-        Me.ucrReceiverFilter.TabIndex = 11
+        Me.ucrReceiverFilter.Size = New System.Drawing.Size(129, 20)
+        Me.ucrReceiverFilter.TabIndex = 2
         '
         'lblFilterPreview
         '
         Me.lblFilterPreview.AutoSize = True
-        Me.lblFilterPreview.Location = New System.Drawing.Point(7, 299)
+        Me.lblFilterPreview.Location = New System.Drawing.Point(10, 285)
         Me.lblFilterPreview.Name = "lblFilterPreview"
-        Me.lblFilterPreview.Size = New System.Drawing.Size(115, 13)
-        Me.lblFilterPreview.TabIndex = 12
-        Me.lblFilterPreview.Text = "Selected Filter Preview"
+        Me.lblFilterPreview.Size = New System.Drawing.Size(118, 13)
+        Me.lblFilterPreview.TabIndex = 6
+        Me.lblFilterPreview.Text = "Selected Filter Preview:"
         '
         'ucrInputFilterPreview
         '
+        Me.ucrInputFilterPreview.AddQuotesIfUnrecognised = True
+        Me.ucrInputFilterPreview.IsMultiline = False
         Me.ucrInputFilterPreview.IsReadOnly = False
-        Me.ucrInputFilterPreview.Location = New System.Drawing.Point(135, 291)
+        Me.ucrInputFilterPreview.Location = New System.Drawing.Point(131, 281)
         Me.ucrInputFilterPreview.Name = "ucrInputFilterPreview"
-        Me.ucrInputFilterPreview.Size = New System.Drawing.Size(270, 21)
-        Me.ucrInputFilterPreview.TabIndex = 13
+        Me.ucrInputFilterPreview.Size = New System.Drawing.Size(277, 21)
+        Me.ucrInputFilterPreview.TabIndex = 7
         '
         'grpApplyOptions
         '
         Me.grpApplyOptions.Controls.Add(Me.rdoApplyAsSubset)
         Me.grpApplyOptions.Controls.Add(Me.rdoApplyAsFilter)
-        Me.grpApplyOptions.Location = New System.Drawing.Point(10, 216)
+        Me.grpApplyOptions.Location = New System.Drawing.Point(10, 197)
         Me.grpApplyOptions.Name = "grpApplyOptions"
-        Me.grpApplyOptions.Size = New System.Drawing.Size(232, 42)
-        Me.grpApplyOptions.TabIndex = 14
+        Me.grpApplyOptions.Size = New System.Drawing.Size(232, 53)
+        Me.grpApplyOptions.TabIndex = 4
         Me.grpApplyOptions.TabStop = False
         Me.grpApplyOptions.Text = "Apply Options"
         '
         'rdoApplyAsSubset
         '
         Me.rdoApplyAsSubset.AutoSize = True
-        Me.rdoApplyAsSubset.Location = New System.Drawing.Point(120, 19)
+        Me.rdoApplyAsSubset.Location = New System.Drawing.Point(120, 22)
         Me.rdoApplyAsSubset.Name = "rdoApplyAsSubset"
         Me.rdoApplyAsSubset.Size = New System.Drawing.Size(102, 17)
         Me.rdoApplyAsSubset.TabIndex = 1
@@ -123,7 +126,7 @@ Partial Class dlgRestrict
         'rdoApplyAsFilter
         '
         Me.rdoApplyAsFilter.AutoSize = True
-        Me.rdoApplyAsFilter.Location = New System.Drawing.Point(6, 19)
+        Me.rdoApplyAsFilter.Location = New System.Drawing.Point(6, 22)
         Me.rdoApplyAsFilter.Name = "rdoApplyAsFilter"
         Me.rdoApplyAsFilter.Size = New System.Drawing.Size(91, 17)
         Me.rdoApplyAsFilter.TabIndex = 0
@@ -131,30 +134,19 @@ Partial Class dlgRestrict
         Me.rdoApplyAsFilter.Text = "Apply As Filter"
         Me.rdoApplyAsFilter.UseVisualStyleBackColor = True
         '
-        'lblNewDataFrameName
-        '
-        Me.lblNewDataFrameName.AutoSize = True
-        Me.lblNewDataFrameName.Location = New System.Drawing.Point(7, 269)
-        Me.lblNewDataFrameName.Name = "lblNewDataFrameName"
-        Me.lblNewDataFrameName.Size = New System.Drawing.Size(118, 13)
-        Me.lblNewDataFrameName.TabIndex = 15
-        Me.lblNewDataFrameName.Text = "New Data Frame Name"
-        '
         'ucrNewDataFrameName
         '
-        Me.ucrNewDataFrameName.IsReadOnly = False
-        Me.ucrNewDataFrameName.Location = New System.Drawing.Point(135, 264)
+        Me.ucrNewDataFrameName.Location = New System.Drawing.Point(10, 256)
         Me.ucrNewDataFrameName.Name = "ucrNewDataFrameName"
-        Me.ucrNewDataFrameName.Size = New System.Drawing.Size(190, 21)
-        Me.ucrNewDataFrameName.TabIndex = 16
+        Me.ucrNewDataFrameName.Size = New System.Drawing.Size(291, 24)
+        Me.ucrNewDataFrameName.TabIndex = 5
         '
         'dlgRestrict
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(417, 373)
+        Me.ClientSize = New System.Drawing.Size(419, 366)
         Me.Controls.Add(Me.ucrNewDataFrameName)
-        Me.Controls.Add(Me.lblNewDataFrameName)
         Me.Controls.Add(Me.grpApplyOptions)
         Me.Controls.Add(Me.ucrInputFilterPreview)
         Me.Controls.Add(Me.lblFilterPreview)
@@ -164,6 +156,8 @@ Partial Class dlgRestrict
         Me.Controls.Add(Me.cmdDefineNewFilter)
         Me.Controls.Add(Me.ucrBase)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow
+        Me.MaximizeBox = False
+        Me.MinimizeBox = False
         Me.Name = "dlgRestrict"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Tag = "Filter"
@@ -185,6 +179,5 @@ Partial Class dlgRestrict
     Friend WithEvents grpApplyOptions As GroupBox
     Friend WithEvents rdoApplyAsSubset As RadioButton
     Friend WithEvents rdoApplyAsFilter As RadioButton
-    Friend WithEvents lblNewDataFrameName As Label
-    Friend WithEvents ucrNewDataFrameName As ucrInputTextBox
+    Friend WithEvents ucrNewDataFrameName As ucrSave
 End Class
